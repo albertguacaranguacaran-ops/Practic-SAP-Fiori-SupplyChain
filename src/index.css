@@ -1,0 +1,395 @@
+@import "tailwindcss";
+
+/* SAP Fiori Color Palette */
+:root {
+  --sap-blue: #0854A0;
+  --sap-blue-light: #1873CC;
+  --sap-blue-dark: #003E6C;
+  --sap-gray-bg: #F2F2F2;
+  --sap-gray-100: #FAFAFA;
+  --sap-gray-200: #EEEEEE;
+  --sap-gray-300: #D9D9D9;
+  --sap-gray-border: #C4C4C4;
+  --sap-success: #107E3E;
+  --sap-warning: #E9730C;
+  --sap-error: #BB0000;
+  --sap-text: #32363A;
+  --sap-text-light: #6A6D70;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Arial', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--sap-gray-bg);
+  color: var(--sap-text);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* SAP Shell Header */
+.sap-shell-header {
+  background: linear-gradient(180deg, #354A5F 0%, #2C3E50 100%);
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.sap-logo {
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}
+
+/* Command Bar */
+.command-bar {
+  background: white;
+  border-bottom: 1px solid var(--sap-gray-border);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.command-input {
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid var(--sap-gray-border);
+  border-radius: 3px;
+  width: 200px;
+  background: var(--sap-gray-100);
+}
+
+.command-input:focus {
+  outline: none;
+  border-color: var(--sap-blue);
+  box-shadow: 0 0 0 2px rgba(8, 84, 160, 0.15);
+}
+
+/* SAP Buttons */
+.sap-btn {
+  padding: 6px 16px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sap-btn-primary {
+  background: var(--sap-blue);
+  color: white;
+  border: 1px solid var(--sap-blue);
+}
+
+.sap-btn-primary:hover {
+  background: var(--sap-blue-light);
+}
+
+.sap-btn-secondary {
+  background: white;
+  color: var(--sap-text);
+  border: 1px solid var(--sap-gray-border);
+}
+
+.sap-btn-secondary:hover {
+  background: var(--sap-gray-200);
+}
+
+.sap-btn-ghost {
+  background: transparent;
+  color: var(--sap-blue);
+  border: none;
+}
+
+.sap-btn-ghost:hover {
+  background: rgba(8, 84, 160, 0.08);
+}
+
+/* ALV Grid Table */
+.alv-grid {
+  background: white;
+  border: 1px solid var(--sap-gray-border);
+  margin: 16px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.alv-toolbar {
+  background: var(--sap-gray-100);
+  border-bottom: 1px solid var(--sap-gray-border);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.alv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.alv-table th {
+  background: linear-gradient(180deg, #F7F7F7 0%, #ECECEC 100%);
+  padding: 8px 10px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--sap-text);
+  border-bottom: 2px solid var(--sap-gray-border);
+  border-right: 1px solid var(--sap-gray-300);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.alv-table th:hover {
+  background: linear-gradient(180deg, #ECECEC 0%, #E0E0E0 100%);
+}
+
+.alv-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--sap-gray-200);
+  border-right: 1px solid var(--sap-gray-200);
+  vertical-align: middle;
+}
+
+.alv-table tr:hover {
+  background: #E8F4FD;
+}
+
+.alv-table tr.selected {
+  background: #D4E8FA;
+}
+
+.alv-table tr.duplicate {
+  background: #FFF3CD;
+}
+
+.alv-table tr.low-stock {
+  background: #FFE5E5;
+}
+
+.alv-table tr.discontinued {
+  background: #F0F0F0;
+  color: var(--sap-text-light);
+}
+
+/* Status Indicators */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.status-active {
+  background: #E8F5E9;
+  color: var(--sap-success);
+}
+
+.status-duplicate {
+  background: #FFF3CD;
+  color: #856404;
+}
+
+.status-low-stock {
+  background: #FFEBEE;
+  color: var(--sap-error);
+}
+
+.status-discontinued {
+  background: #EEEEEE;
+  color: var(--sap-text-light);
+}
+
+/* Status Bar */
+.status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: white;
+  border-top: 1px solid var(--sap-gray-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  font-size: 12px;
+  z-index: 100;
+}
+
+.status-bar.error {
+  background: var(--sap-error);
+  color: white;
+}
+
+.status-bar.warning {
+  background: var(--sap-warning);
+  color: white;
+}
+
+.status-bar.success {
+  background: var(--sap-success);
+  color: white;
+}
+
+/* Modal/Dialog */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.modal-header {
+  background: var(--sap-gray-100);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--sap-gray-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  background: var(--sap-gray-100);
+  padding: 12px 16px;
+  border-top: 1px solid var(--sap-gray-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Form Fields */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sap-text);
+  margin-bottom: 4px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--sap-gray-border);
+  border-radius: 3px;
+  font-size: 13px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--sap-blue);
+}
+
+.form-input.error {
+  border-color: var(--sap-error);
+  background: #FFF5F5;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--sap-gray-border);
+  background: white;
+}
+
+.tab {
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--sap-text-light);
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+
+.tab:hover {
+  color: var(--sap-blue);
+  background: var(--sap-gray-100);
+}
+
+.tab.active {
+  color: var(--sap-blue);
+  border-bottom-color: var(--sap-blue);
+}
+
+/* Scrollable container */
+.scroll-container {
+  height: calc(100vh - 150px);
+  overflow: auto;
+}
+
+/* Chip/Tag */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: var(--sap-gray-200);
+  border-radius: 16px;
+  font-size: 11px;
+  gap: 4px;
+}
+
+.chip-category {
+  background: #E3F2FD;
+  color: #1565C0;
+}
+
+/* Loading */
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--sap-gray-300);
+  border-top-color: var(--sap-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Utility */
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.font-mono { font-family: 'Consolas', 'Monaco', monospace; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
