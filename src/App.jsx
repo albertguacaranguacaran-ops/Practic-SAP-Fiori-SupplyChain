@@ -8,49 +8,55 @@ import StatusBar, { useStatusMessage } from './components/StatusBar';
 import MaterialDetail from './components/MaterialDetail';
 import SalesOrder from './components/SalesOrder';
 import SQLBrowser from './components/SQLBrowser';
+import FioriLaunchpad from './components/FioriLaunchpad';
 
-// Data & Utils
-import { SAMPLE_PRODUCTS, getFullDataset, getDataStats, CATEGORY_LIST } from './data/dakaProducts';
+// Data & Utils - Hybrid Supabase/Local
+import { useMaterials, useConnectionStatus } from './lib/useData';
+import { getDataStats } from './data/dakaProducts';
 import { exportToExcel } from './utils/excelExport';
 
 function App() {
-  // State
-  const [products, setProducts] = useState([]);
+  // Hybrid Data Hook - Supabase con fallback a datos locales
+  const {
+    materials: products,
+    loading,
+    dataSource,
+    loadFullDataset,
+    createMaterial,
+    updateMaterial,
+    loadMaterials
+  } = useMaterials();
+
+  const connectionStatus = useConnectionStatus();
+
+  // UI State
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [currentTransaction, setCurrentTransaction] = useState('/nMM03');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [modalMode, setModalMode] = useState(null); // 'view', 'edit', 'create', 'sales', 'sql'
   const [activeFilter, setActiveFilter] = useState('all');
+  const [showLaunchpad, setShowLaunchpad] = useState(false);
 
   const { status, showSuccess, showError, showWarning, showInfo } = useStatusMessage();
 
-  // Load initial data
+  // Sync filtered products when products change
   useEffect(() => {
-    setLoading(true);
-    // Simulate SAP data loading
-    setTimeout(() => {
-      setProducts(SAMPLE_PRODUCTS);
-      setFilteredProducts(SAMPLE_PRODUCTS);
-      setLoading(false);
-      showInfo(`${SAMPLE_PRODUCTS.length.toLocaleString()} materiales cargados desde SAP`);
-    }, 800);
-  }, []);
+    if (products.length > 0) {
+      setFilteredProducts(products);
+      const sourceLabel = dataSource === 'supabase' ? 'Supabase' : 'datos locales';
+      showInfo(`${products.length.toLocaleString()} materiales cargados desde ${sourceLabel}`);
+    }
+  }, [products, dataSource]);
 
-  // Load full dataset
-  const loadFullDataset = useCallback(() => {
-    setLoading(true);
+  // Load full dataset handler
+  const handleLoadFullDataset = useCallback(() => {
     showInfo('Cargando dataset completo (36,000 registros)...');
-
+    loadFullDataset();
     setTimeout(() => {
-      const fullData = getFullDataset();
-      setProducts(fullData);
-      setFilteredProducts(fullData);
-      setLoading(false);
-      showSuccess(`${fullData.length.toLocaleString()} materiales cargados exitosamente`);
+      showSuccess('Dataset completo cargado exitosamente');
     }, 1500);
-  }, []);
+  }, [loadFullDataset]);
 
   // Apply filter based on transaction
   const applyFilter = useCallback((filterType) => {
@@ -84,11 +90,13 @@ function App() {
 
   // Handle transaction execution
   const handleTransaction = (code, info) => {
+    console.log('📌 Transaction executed:', code, info);
     setCurrentTransaction(code);
 
     switch (code) {
       case '/nMM01':
         // Create new material
+        console.log('🆕 MM01 - Opening create modal');
         setSelectedProduct(null);
         setModalMode('create');
         showInfo('Transacción MM01 - Crear Material');
@@ -185,6 +193,83 @@ function App() {
         showInfo('Transacción SE16 - Data Browser');
         break;
 
+      // ============ MATERIAL MASTER ADICIONALES ============
+      case '/nMM04':
+        // Material change history
+        if (selectedRows.size === 0) {
+          showWarning('Seleccione un material para ver historial de cambios');
+          return;
+        }
+        const histId = Array.from(selectedRows)[0];
+        const histProduct = products.find(p => p.id === histId);
+        showInfo(`Historial de cambios para ${histProduct?.id}: Creado ${histProduct?.fechaCreacion || 'N/A'}, Última modificación: ${histProduct?.ultimaModificacion || 'N/A'}`);
+        break;
+
+      case '/nMM60':
+        // Price analysis
+        const avgPrice = products.reduce((sum, p) => sum + (p.precioBase || 0), 0) / products.length;
+        const maxPrice = Math.max(...products.map(p => p.precioBase || 0));
+        const minPrice = Math.min(...products.filter(p => p.precioBase > 0).map(p => p.precioBase));
+        showInfo(`Análisis de Precios - Promedio: $${avgPrice.toFixed(2)} | Máx: $${maxPrice.toFixed(2)} | Mín: $${minPrice.toFixed(2)}`);
+        break;
+
+      case '/nMMBE':
+        // Stock overview
+        const totalStock = products.reduce((sum, p) => sum + (p.stockActual || 0), 0);
+        const avgStock = totalStock / products.length;
+        showInfo(`Resumen de Stocks - Total: ${totalStock.toLocaleString()} unidades | Promedio por material: ${avgStock.toFixed(0)}`);
+        break;
+
+      // ============ VENTAS (SD) ============
+      case '/nVA02':
+        // Modify sales order - requires existing order
+        showWarning('No hay pedidos de venta para modificar. Cree uno primero con VA01.');
+        break;
+
+      case '/nVA03':
+        // View sales orders
+        showInfo('Transacción VA03 - No hay pedidos de venta registrados. Use VA01 para crear uno.');
+        break;
+
+      case '/nVL01N':
+        // Create delivery  
+        showInfo('Transacción VL01N - Crear Entrega. Requiere un pedido de venta existente (VA01).');
+        break;
+
+      case '/nVL02N':
+        // Modify delivery
+        showWarning('No hay entregas para modificar. Cree un pedido (VA01) y luego una entrega (VL01N).');
+        break;
+
+      // ============ WAREHOUSE (WM) ============
+      case '/nLT01':
+        // Create transfer order
+        if (selectedRows.size === 0) {
+          showWarning('Seleccione material(es) para crear orden de transferencia');
+          return;
+        }
+        const transferCount = selectedRows.size;
+        showSuccess(`Orden de transferencia creada para ${transferCount} material(es). [Simulación]`);
+        break;
+
+      case '/nLT21':
+        // View transfer orders
+        showInfo('Transacción LT21 - No hay órdenes de transferencia. Use LT01 para crear una.');
+        break;
+
+      // ============ SISTEMA ============
+      case '/nSU01':
+        // User maintenance
+        showInfo('Usuario actual: CONSULTOR01 | Rol: Consultor SAP MM/SD | Centro: 1000 DAKA CARACAS');
+        break;
+
+      case '/nEX':
+        // Exit system
+        if (confirm('¿Está seguro que desea cerrar la sesión SAP?')) {
+          showWarning('Sesión SAP cerrada. [En producción, esto cerraría la aplicación]');
+        }
+        break;
+
       case 'ERROR':
         showError(info.description);
         break;
@@ -216,30 +301,27 @@ function App() {
     }
   };
 
-  // Handle save material
-  const handleSaveMaterial = (material) => {
+  // Handle save material - Using hybrid hook
+  const handleSaveMaterial = async (material) => {
     if (modalMode === 'create') {
-      // Generate new ID
-      const newId = `DF-${String(products.length + 1).padStart(6, '0')}`;
-      const newMaterial = { ...material, id: newId, fechaCreacion: new Date().toISOString().split('T')[0] };
-      setProducts([newMaterial, ...products]);
-      setFilteredProducts([newMaterial, ...filteredProducts]);
-      showSuccess(`Material ${newId} creado exitosamente`);
+      const result = await createMaterial(material);
+      if (result.success) {
+        showSuccess(`Material ${result.id} creado exitosamente`);
+      } else {
+        showError('Error al crear material: ' + (result.error?.message || 'Error desconocido'));
+      }
     } else {
-      // Update existing
-      const updated = products.map(p => p.id === material.id ? material : p);
-      setProducts(updated);
-      setFilteredProducts(updated.filter(p =>
-        activeFilter === 'all' ? true :
-          activeFilter === 'duplicates' ? p.status === 'duplicate' :
-            activeFilter === 'lowStock' ? p.stockActual < p.puntoReorden :
-              activeFilter === 'overweight' ? p.pesoNeto > 50 :
-                true
-      ));
-      showSuccess(`Material ${material.id} actualizado`);
+      const result = await updateMaterial(material);
+      if (result.success) {
+        showSuccess(`Material ${material.id} actualizado`);
+      } else {
+        showError('Error al actualizar: ' + (result.error?.message || 'Error desconocido'));
+      }
     }
     setModalMode(null);
     setSelectedProduct(null);
+    // Refresh filtered products
+    applyFilter(activeFilter);
   };
 
   // Close modal
@@ -267,6 +349,30 @@ function App() {
         </div>
 
         <div className="ml-auto flex items-center gap-4 text-white/80 text-sm">
+          {/* Fiori Launchpad Button */}
+          <button
+            onClick={() => setShowLaunchpad(true)}
+            className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+            title="Abrir SAP Fiori Launchpad"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span className="hidden md:inline">Launchpad</span>
+          </button>
+
+          {/* Connection Status Indicator */}
+          <span className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs ${dataSource === 'supabase'
+            ? 'bg-green-500/20 text-green-300'
+            : 'bg-yellow-500/20 text-yellow-300'
+            }`}>
+            <span className={`w-2 h-2 rounded-full ${dataSource === 'supabase' ? 'bg-green-400' : 'bg-yellow-400'}`}></span>
+            {dataSource === 'supabase' ? '☁️ Supabase' : '💾 Local'}
+          </span>
+          <span>|</span>
           <span>Sistema: PRD</span>
           <span>|</span>
           <span>Mandante: 100</span>
@@ -308,7 +414,7 @@ function App() {
 
         <div className="ml-auto flex items-center gap-2">
           <button
-            onClick={loadFullDataset}
+            onClick={handleLoadFullDataset}
             className="sap-btn sap-btn-secondary text-xs"
             disabled={products.length >= 36000}
           >
@@ -380,6 +486,18 @@ function App() {
             else if (type === 'warning') showWarning(msg);
             else showInfo(msg);
           }}
+        />
+      )}
+
+      {/* Fiori Launchpad */}
+      {showLaunchpad && (
+        <FioriLaunchpad
+          onExecuteTransaction={(code) => {
+            const info = TRANSACTIONS[code];
+            if (info) handleTransaction(code, info);
+          }}
+          onClose={() => setShowLaunchpad(false)}
+          stats={stats}
         />
       )}
     </div>

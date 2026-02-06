@@ -38,7 +38,7 @@ body {
   display: flex;
   align-items: center;
   padding: 0 16px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .sap-logo {
@@ -66,6 +66,7 @@ body {
   border-radius: 3px;
   width: 200px;
   background: var(--sap-gray-100);
+  color: var(--sap-text);
 }
 
 .command-input:focus {
@@ -256,7 +257,7 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -266,7 +267,7 @@ body {
 .modal-content {
   background: white;
   border-radius: 4px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   max-width: 800px;
   max-height: 90vh;
   overflow: auto;
@@ -324,6 +325,57 @@ body {
 .form-input.error {
   border-color: var(--sap-error);
   background: #FFF5F5;
+}
+
+/* SAP-style Form Components */
+.sap-form-group {
+  margin-bottom: 12px;
+}
+
+.sap-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sap-text-light);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.sap-input {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--sap-gray-border);
+  border-radius: 2px;
+  font-size: 13px;
+  background: white;
+  transition: all 0.15s;
+}
+
+.sap-input:focus {
+  outline: none;
+  border-color: var(--sap-blue);
+  box-shadow: 0 0 0 3px rgba(8, 84, 160, 0.1);
+}
+
+.sap-input:disabled {
+  background: var(--sap-gray-100);
+  color: var(--sap-text-light);
+  cursor: not-allowed;
+}
+
+.sap-input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+select.sap-input {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236A6D70' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
 }
 
 /* Tabs */
@@ -385,11 +437,26 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Utility */
-.text-right { text-align: right; }
-.text-center { text-align: center; }
-.font-mono { font-family: 'Consolas', 'Monaco', monospace; }
-.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.font-mono {
+  font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

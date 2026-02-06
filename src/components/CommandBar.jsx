@@ -45,6 +45,7 @@ const FAVORITE_TRANSACTIONS = ['/nMM01', '/nMM02', '/nMM03', '/nVA01'];
 export default function CommandBar({ onExecute, currentTransaction }) {
     const [command, setCommand] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showFavorites, setShowFavorites] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
     const [history, setHistory] = useState(RECENT_TRANSACTIONS);
@@ -64,13 +65,28 @@ export default function CommandBar({ onExecute, currentTransaction }) {
     }, [command]);
 
     const executeCommand = (cmd = command) => {
-        const upperCmd = cmd.toUpperCase();
+        // Normalizar comando - muy flexible
+        let normalizedCmd = cmd.trim();
 
-        if (TRANSACTIONS[upperCmd]) {
+        // Si no empieza con /, agregarlo
+        if (!normalizedCmd.startsWith('/')) {
+            normalizedCmd = '/n' + normalizedCmd.toUpperCase();
+        }
+        // Si empieza con / pero no /n, agregar la n
+        else if (normalizedCmd.startsWith('/') && !normalizedCmd.toLowerCase().startsWith('/n')) {
+            normalizedCmd = '/n' + normalizedCmd.slice(1).toUpperCase();
+        }
+        // Si empieza con /n, normalizar
+        else if (normalizedCmd.toLowerCase().startsWith('/n')) {
+            normalizedCmd = '/n' + normalizedCmd.slice(2).toUpperCase();
+        }
+
+        if (TRANSACTIONS[normalizedCmd]) {
             // Add to history
-            setHistory(prev => [upperCmd, ...prev.filter(h => h !== upperCmd)].slice(0, 10));
-            onExecute(upperCmd, TRANSACTIONS[upperCmd]);
-            setCommand('');
+            setHistory(prev => [normalizedCmd, ...prev.filter(h => h !== normalizedCmd)].slice(0, 10));
+            onExecute(normalizedCmd, TRANSACTIONS[normalizedCmd]);
+            // Mantener la transacción visible como en SAP real
+            setCommand(normalizedCmd);
             setShowDropdown(false);
         } else if (cmd.startsWith('/')) {
             // Unknown transaction
@@ -121,12 +137,13 @@ export default function CommandBar({ onExecute, currentTransaction }) {
                 {/* Dropdown Suggestions */}
                 {showDropdown && suggestions.length > 0 && (
                     <div className="absolute top-full left-0 right-0 bg-white border border-[#C4C4C4] 
-                          rounded-b shadow-lg z-50 max-h-64 overflow-auto">
+                          rounded-b shadow-xl max-h-64 overflow-auto"
+                        style={{ zIndex: 9999 }}>
                         {suggestions.map(([code, info]) => (
                             <div
                                 key={code}
                                 onClick={() => executeCommand(code)}
-                                className="px-3 py-2 hover:bg-[#E8F4FD] cursor-pointer flex items-center justify-between"
+                                className="px-3 py-2 hover:bg-[#E8F4FD] cursor-pointer flex items-center justify-between border-b border-gray-100"
                             >
                                 <div className="flex items-center gap-3">
                                     <span className="font-mono text-[#0854A0] font-semibold text-sm">{code}</span>
@@ -156,13 +173,31 @@ export default function CommandBar({ onExecute, currentTransaction }) {
                 {/* Favorites */}
                 <div className="relative">
                     <button
-                        onClick={() => setShowDropdown(!showDropdown)}
+                        onClick={() => setShowFavorites(!showFavorites)}
                         className="sap-btn sap-btn-ghost flex items-center gap-1"
                         title="Favoritos"
                     >
                         <Star size={14} className="text-[#E9730C]" />
                         <ChevronDown size={12} />
                     </button>
+                    {showFavorites && (
+                        <div className="absolute top-full right-0 bg-white border border-[#C4C4C4] rounded shadow-lg z-50 min-w-48">
+                            <div className="px-3 py-2 border-b bg-[#F2F2F2] text-xs font-semibold">
+                                Transacciones Favoritas
+                            </div>
+                            {FAVORITE_TRANSACTIONS.map(code => (
+                                <div
+                                    key={code}
+                                    onClick={() => { executeCommand(code); setShowFavorites(false); }}
+                                    className="px-3 py-2 hover:bg-[#E8F4FD] cursor-pointer flex items-center gap-2"
+                                >
+                                    <Star size={12} className="text-[#E9730C]" />
+                                    <span className="font-mono text-sm">{code}</span>
+                                    <span className="text-xs text-[#6A6D70]">- {TRANSACTIONS[code]?.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* History */}
