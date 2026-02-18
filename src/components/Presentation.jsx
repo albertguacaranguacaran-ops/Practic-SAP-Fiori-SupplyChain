@@ -7,12 +7,52 @@ import {
 /*
  * ══════════════════════════════════════════════════════════════
  *   WORLD-CLASS PRESENTATION — /nPRES
- *   Standards applied:
+ *   Fully connected to live diagnostic data
  *   • McKinsey: Pyramid Principle, action titles, SCR flow
  *   • Apple:    1 idea per slide, 3-second comprehension
  *   • 2025:    Bold minimalism, big numbers, contrast
  * ══════════════════════════════════════════════════════════════
  */
+
+// ─── INLINE DIAGNOSTIC ENGINE (same as /nDQ) ────────────────
+function levenshtein(a, b) {
+    const m = a.length, n = b.length;
+    if (m === 0) return n; if (n === 0) return m;
+    const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+    for (let i = 0; i <= m; i++) dp[i][0] = i;
+    for (let j = 0; j <= n; j++) dp[0][j] = j;
+    for (let i = 1; i <= m; i++)
+        for (let j = 1; j <= n; j++)
+            dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    return dp[m][n];
+}
+function normalize(s) {
+    return (s || '').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
+}
+function similarity(a, b) {
+    if (!a || !b) return 0; const na = normalize(a), nb = normalize(b);
+    if (na === nb) return 100; const mx = Math.max(na.length, nb.length);
+    return mx === 0 ? 100 : Math.round((1 - levenshtein(na, nb) / mx) * 100);
+}
+const ABBR = {
+    'NEV': 'NEVERA', 'REF': 'REFRIGERADOR', 'LAV': 'LAVADORA', 'TV': 'TELEVISOR',
+    'COMP': 'COMPRESOR', 'BOMB': 'BOMBA', 'VENT': 'VENTILADOR', 'TUB': 'TUBO', 'MANG': 'MANGUERA',
+    'VAL': 'VALVULA', 'GRI': 'GRIFO', 'SEC': 'SECADORA', 'FILT': 'FILTRO', 'CTRL': 'CONTROL',
+    'BCA': 'BLANCA', 'BCO': 'BLANCO', 'NGR': 'NEGRO', 'AZ': 'AZUL', 'GR': 'GRIS', 'PQ': 'PEQUEÑO',
+    'GDE': 'GRANDE', 'INOX': 'INOXIDABLE', 'ALU': 'ALUMINIO', 'GALV': 'GALVANIZADO',
+    'CALC': 'CALENTADOR', 'MICRO': 'MICROONDAS', 'PLAN': 'PLANCHA', 'HERR': 'HERRAMIENTA'
+};
+function analyzeNaming(d) {
+    const s = (d || '').trim(); let score = 100; const issues = [];
+    if (!s || s.length < 3) return { score: 0, issues: ['Sin descripción'] };
+    if (s.length < 10) { score -= 25; issues.push('Muy corta'); }
+    if (s !== s.toUpperCase()) { score -= 10; issues.push('No MAYÚSCULAS'); }
+    const words = normalize(s).split(' ');
+    const abbrs = words.filter(w => ABBR[w]);
+    if (abbrs.length > 0) { score -= 10 * abbrs.length; issues.push(`Abrev: ${abbrs.join(', ')}`); }
+    if (words.length <= 2 && s.length < 15) { score -= 20; issues.push('Muy genérica'); }
+    return { score: Math.max(0, score), issues };
+}
 
 // =============================================
 //  SLIDE DATA BUILDER
@@ -21,7 +61,9 @@ function buildSlides(m) {
     const pctSinEAN = m.total ? ((m.sinEAN / m.total) * 100).toFixed(0) : 0;
     const pctSinPeso = m.total ? ((m.sinPeso / m.total) * 100).toFixed(0) : 0;
     const pctSinReorden = m.total ? ((m.sinReorden / m.total) * 100).toFixed(0) : 0;
-    const costoFlete = (m.sinPeso * 0.15 * 12).toFixed(0); // Estimated annual impact
+    const costoFlete = (m.sinPeso * 0.15 * 12).toFixed(0);
+    const ns = m.namingScore || 0;
+    const nsColor = ns >= 80 ? '#22C55E' : ns >= 60 ? '#F59E0B' : ns >= 40 ? '#E9730C' : '#EF4444';
 
     return [
         // ── 0  OPENING ──────────────────────────────────
@@ -97,11 +139,36 @@ function buildSlides(m) {
             ],
         },
 
-        // ── 6  WHAT WE BUILT ─────────────────────────────
+        // ── 6  NAMING HEALTH SCORE ────────────────────────
+        {
+            id: 'namingScore', layout: 'scoreGauge',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            actionTitle: 'Diagnóstico en vivo: calidad de naming',
+            score: Math.round(ns), scoreColor: nsColor,
+            distribution: [
+                { label: 'Crítico', count: m.namingCritical || 0, color: '#EF4444' },
+                { label: 'Alto', count: m.namingHigh || 0, color: '#F59E0B' },
+                { label: 'Medio', count: m.namingMedium || 0, color: '#3B82F6' },
+                { label: 'Bueno', count: m.namingGood || 0, color: '#22C55E' },
+            ],
+            verdict: ns >= 80 ? 'Naming en buen estado' : ns >= 60 ? 'Se necesita atención' : ns >= 40 ? 'Intervención urgente requerida' : 'Estado crítico — acción inmediata',
+        },
+
+        // ── 7  DUPLICATES DETECTED ────────────────────────
+        {
+            id: 'dupsDetected', layout: 'dupList',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            actionTitle: `${m.dupCount || 0} pares sospechosos detectados por similitud`,
+            pairs: (m.topDups || []).slice(0, 4),
+            abbrCount: m.abbrCount || 0,
+            topAbbrs: (m.topAbbrs || []).slice(0, 6),
+        },
+
+        // ── 8  WHAT WE BUILT ─────────────────────────────
         {
             id: 'tools', layout: 'grid6',
             bg: 'from-[#0f172a] to-[#1e293b]',
-            actionTitle: 'Construimos 6 herramientas que no existían',
+            actionTitle: 'Construimos 8 herramientas que no existían',
             items: [
                 { icon: '📋', title: 'Plan Maestro', code: '/nPLAN', desc: 'Naming + Cedulación + Plan 30-60-90' },
                 { icon: '👥', title: 'Mi Equipo', code: '/nTEAM', desc: 'Roles, tareas y KPIs' },
@@ -109,6 +176,8 @@ function buildSlides(m) {
                 { icon: '📊', title: 'Gestor EAN', code: '/nEAN', desc: 'Múltiples códigos de barra' },
                 { icon: '🚀', title: 'E-commerce', code: '/nECOMM', desc: 'Tablero estratégico 36k SKU' },
                 { icon: '📥', title: 'Importador', code: '/nIMPORT', desc: 'Cargar datos reales de SAP' },
+                { icon: '🔍', title: 'Diagnóstico', code: '/nDQ', desc: 'Naming + duplicados + correcciones' },
+                { icon: '🎬', title: 'Presentación', code: '/nPRES', desc: 'Este slideshow con datos reales' },
             ],
         },
 
@@ -167,12 +236,13 @@ function buildSlides(m) {
             line3: 'Con eso, este plan se ejecuta y el ROI es inmediato',
         },
 
-        // ── 11  DEMO ─────────────────────────────────────
+        // ── 13  DEMO ─────────────────────────────────────
         {
             id: 'demo', layout: 'demo',
             bg: 'from-[#0f172a] to-[#1e293b]',
             actionTitle: 'Demo en vivo — haz clic para explorar',
             buttons: [
+                { label: 'Diagnóstico', tx: '/nDQ', color: '#DC2626' },
                 { label: 'Plan Maestro', tx: '/nPLAN', color: '#0854A0' },
                 { label: 'Data Browser', tx: '/nSE16N', color: '#354A5F' },
                 { label: 'Gestor EAN', tx: '/nEAN', color: '#D97706' },
@@ -201,13 +271,42 @@ export default function Presentation({ materials = [], onNavigate, onClose }) {
 
     const metrics = useMemo(() => {
         let sinEAN = 0, sinPeso = 0, sinReorden = 0, sinDesc = 0;
+        let totalScore = 0, critical = 0, high = 0, medium = 0, good = 0;
+        const allAbbrs = {};
         for (const p of materials) {
             if (!p.ean || p.ean === '') sinEAN++;
             if (!p.pesoNeto || p.pesoNeto === 0) sinPeso++;
             if (!p.puntoReorden || p.puntoReorden === 0) sinReorden++;
             if (!p.descripcion || p.descripcion.trim() === '') sinDesc++;
+            // Naming analysis
+            const na = analyzeNaming(p.descripcion);
+            totalScore += na.score;
+            if (na.score < 30) critical++;
+            else if (na.score < 60) high++;
+            else if (na.score < 80) medium++;
+            else good++;
+            // Abbreviations
+            const words = normalize(p.descripcion || '').split(' ');
+            words.forEach(w => { if (ABBR[w]) allAbbrs[w] = (allAbbrs[w] || 0) + 1; });
         }
-        return { sinEAN, sinPeso, sinReorden, sinDesc, total: materials.length };
+        const n = materials.length || 1;
+        // Find top duplicates (limit to 500 for speed)
+        const pairs = [];
+        const normed = materials.slice(0, 500).map(m => ({ id: m.id, desc: normalize(m.descripcion), orig: m.descripcion }));
+        for (let i = 0; i < normed.length; i++) {
+            for (let j = i + 1; j < normed.length; j++) {
+                const sim = similarity(normed[i].desc, normed[j].desc);
+                if (sim >= 70 && sim < 100) pairs.push({ a: normed[i], b: normed[j], sim });
+            }
+        }
+        pairs.sort((a, b) => b.sim - a.sim);
+        const topAbbrs = Object.entries(allAbbrs).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({ abbr: k, full: ABBR[k], count: v }));
+        return {
+            sinEAN, sinPeso, sinReorden, sinDesc, total: materials.length,
+            namingScore: totalScore / n, namingCritical: critical, namingHigh: high, namingMedium: medium, namingGood: good,
+            dupCount: pairs.length, topDups: pairs.slice(0, 4),
+            abbrCount: topAbbrs.reduce((s, a) => s + a.count, 0), topAbbrs,
+        };
     }, [materials]);
 
     const slides = useMemo(() => buildSlides(metrics), [metrics]);
@@ -421,6 +520,80 @@ export default function Presentation({ materials = [], onNavigate, onClose }) {
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ===== LAYOUT: scoreGauge (naming health) ===== */}
+                    {s.layout === 'scoreGauge' && (
+                        <div className="space-y-8">
+                            <h2 className="text-3xl font-black text-white text-center">{s.actionTitle}</h2>
+                            <div className="flex items-center justify-center gap-12">
+                                {/* Gauge */}
+                                <div className="relative w-44 h-44">
+                                    <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
+                                        <circle cx="60" cy="60" r="50" fill="none"
+                                            stroke={s.scoreColor} strokeWidth="10"
+                                            strokeDasharray={`${s.score * 3.14} 314`}
+                                            strokeLinecap="round"
+                                        />
+                                    </svg>
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span className="text-5xl font-black" style={{ color: s.scoreColor }}>{s.score}</span>
+                                        <span className="text-xs text-white/40">de 100</span>
+                                    </div>
+                                </div>
+                                {/* Distribution */}
+                                <div className="space-y-3 min-w-[200px]">
+                                    {s.distribution.map((d, i) => (
+                                        <div key={i} className="flex items-center gap-3">
+                                            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: d.color }} />
+                                            <span className="text-sm text-white/60 w-16">{d.label}</span>
+                                            <div className="flex-1 h-2 bg-white/[0.06] rounded-full overflow-hidden">
+                                                <div className="h-full rounded-full transition-all" style={{ width: `${(d.count / (metrics.total || 1)) * 100}%`, backgroundColor: d.color }} />
+                                            </div>
+                                            <span className="text-xs text-white/40 font-mono w-12 text-right">{d.count}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <p className="text-center text-lg text-white/50 font-light">{s.verdict}</p>
+                        </div>
+                    )}
+
+                    {/* ===== LAYOUT: dupList (duplicates + abbreviations) ===== */}
+                    {s.layout === 'dupList' && (
+                        <div className="space-y-8">
+                            <h2 className="text-3xl font-black text-white text-center">{s.actionTitle}</h2>
+                            <div className="grid grid-cols-2 gap-6 max-w-5xl mx-auto">
+                                {/* Duplicates */}
+                                <div className="space-y-3">
+                                    <h3 className="text-sm font-bold text-red-400 uppercase tracking-wider">Posibles Duplicados</h3>
+                                    {s.pairs.length > 0 ? s.pairs.map((p, i) => (
+                                        <div key={i} className="bg-red-500/10 border border-red-500/20 rounded-xl p-3">
+                                            <span className="text-[10px] bg-red-500 text-white px-2 py-0.5 rounded-full font-bold">{p.sim}%</span>
+                                            <div className="mt-2 space-y-1">
+                                                <p className="text-xs text-white/70 font-mono">{p.a.orig}</p>
+                                                <p className="text-xs text-white/70 font-mono">{p.b.orig}</p>
+                                            </div>
+                                        </div>
+                                    )) : (
+                                        <p className="text-sm text-white/30">No se detectaron duplicados</p>
+                                    )}
+                                </div>
+                                {/* Abbreviations */}
+                                <div className="space-y-3">
+                                    <h3 className="text-sm font-bold text-amber-400 uppercase tracking-wider">Abreviaciones Detectadas ({s.abbrCount})</h3>
+                                    {s.topAbbrs.map((a, i) => (
+                                        <div key={i} className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-2">
+                                            <span className="text-sm font-mono text-red-400 line-through font-bold">{a.abbr}</span>
+                                            <ArrowRight size={14} className="text-white/20" />
+                                            <span className="text-sm font-mono text-emerald-400 font-bold">{a.full}</span>
+                                            <span className="ml-auto text-xs text-white/30">{a.count}x</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     )}
