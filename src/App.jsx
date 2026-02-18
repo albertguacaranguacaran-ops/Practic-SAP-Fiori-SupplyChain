@@ -31,6 +31,7 @@ import EcommerceMonitor from './components/EcommerceMonitor';
 import MD04 from './components/MD04';
 import EANManager from './components/EANManager';
 import TeamOperations from './components/TeamOperations';
+import MasterPlan from './components/MasterPlan';
 import { useBilling } from './lib/useBilling';
 import { exportToExcel } from './utils/excelExport';
 
@@ -283,6 +284,12 @@ function App() {
         // Team Operations Center
         setModalMode('team');
         showInfo('Centro de Operaciones - Equipo Supply Chain');
+        break;
+
+      case '/nPLAN':
+        // Master Plan
+        setModalMode('plan');
+        showInfo('Plan Maestro — Naming, Cedulación y Plan 30-60-90');
         break;
 
       case '/nMENU':
@@ -891,6 +898,26 @@ function App() {
       {
         modalMode === 'team' && (
           <TeamOperations
+            materials={products}
+            onNavigate={(cmd) => {
+              setModalMode(null);
+              setTimeout(() => handleTransaction(cmd), 150);
+            }}
+            onClose={closeModal}
+            showStatus={(msg, type) => {
+              if (type === 'success') showSuccess(msg);
+              else if (type === 'error') showError(msg);
+              else if (type === 'warning') showWarning(msg);
+              else showInfo(msg);
+            }}
+          />
+        )
+      }
+
+      {/* Master Plan */}
+      {
+        modalMode === 'plan' && (
+          <MasterPlan
             materials={products}
             onNavigate={(cmd) => {
               setModalMode(null);
