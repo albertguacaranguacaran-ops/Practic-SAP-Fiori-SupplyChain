@@ -40,10 +40,10 @@ const MI_PANEL = [
         icon: '📊', color: '#D97706', gradient: 'from-[#D97706] to-[#F59E0B]'
     },
     {
-        id: 'ecomm_panel', code: '/nECOMM',
-        title: 'E-commerce Strategy',
-        desc: 'Tablero estratégico 36k SKU',
-        icon: '🚀', color: '#DC2626', gradient: 'from-[#DC2626] to-[#EF4444]'
+        id: 'pres', code: '/nPRES',
+        title: 'Presentación',
+        desc: 'Slideshow profesional paso a paso',
+        icon: '🎬', color: '#DC2626', gradient: 'from-[#DC2626] to-[#EF4444]'
     },
 ];
 

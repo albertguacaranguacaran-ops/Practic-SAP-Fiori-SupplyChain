@@ -52,6 +52,7 @@ const TRANSACTIONS = {
     '/nEAN': { name: 'Gestor EAN', module: 'MM', description: 'Gestión de múltiples códigos de barra (MEAN)' },
     '/nTEAM': { name: 'Equipo SCM', module: 'SCM', description: 'Centro de Operaciones del Equipo Supply Chain' },
     '/nPLAN': { name: 'Plan Maestro', module: 'SCM', description: 'Naming, Cedulación y Plan 30-60-90' },
+    '/nPRES': { name: 'Presentación', module: 'SCM', description: 'Presentación profesional paso a paso' },
     '/nGERENTE': { name: 'Descripción de Cargo', module: 'HR', description: 'Dashboard y Responsabilidades SCM' },
     '/nJOB': { name: 'Descripción de Cargo', module: 'HR', description: 'Dashboard y Responsabilidades SCM' },
     '/nMENU': { name: 'Menú SAP (Launchpad)', description: 'Ver todas las transacciones disponibles' },

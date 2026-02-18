@@ -32,6 +32,7 @@ import MD04 from './components/MD04';
 import EANManager from './components/EANManager';
 import TeamOperations from './components/TeamOperations';
 import MasterPlan from './components/MasterPlan';
+import Presentation from './components/Presentation';
 import { useBilling } from './lib/useBilling';
 import { exportToExcel } from './utils/excelExport';
 
@@ -290,6 +291,12 @@ function App() {
         // Master Plan
         setModalMode('plan');
         showInfo('Plan Maestro — Naming, Cedulación y Plan 30-60-90');
+        break;
+
+      case '/nPRES':
+        // Presentation
+        setModalMode('pres');
+        showInfo('Presentación Profesional — Use ← → o Espacio para navegar');
         break;
 
       case '/nMENU':
@@ -933,6 +940,17 @@ function App() {
           />
         )
       }
+
+      {modalMode === 'pres' && (
+        <Presentation
+          materials={products}
+          onNavigate={(cmd) => {
+            setModalMode(null);
+            setTimeout(() => handleTransaction(cmd), 150);
+          }}
+          onClose={closeModal}
+        />
+      )}
 
     </div >
   );
