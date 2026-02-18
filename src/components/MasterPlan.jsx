@@ -75,6 +75,10 @@ const CREATION_FLOW = [
         step: 1,
         title: 'Solicitud de Código',
         who: 'Área Comercial / Compras',
+        icon: '📝',
+        color: '#6366F1',
+        roleColor: '#EEF2FF',
+        roleBorder: '#C7D2FE',
         action: 'Llenar formulario de solicitud de material nuevo',
         sapTx: null,
         fields: ['Descripción del producto', 'Categoría sugerida', 'Proveedor', 'EAN si existe', 'Unidad de medida'],
@@ -84,6 +88,10 @@ const CREATION_FLOW = [
         step: 2,
         title: 'Validación de Duplicados',
         who: 'Analista Master Data',
+        icon: '🔍',
+        color: '#0891B2',
+        roleColor: '#ECFEFF',
+        roleBorder: '#A5F3FC',
         action: 'Verificar que no exista ya en SAP',
         sapTx: '/nSE16',
         fields: ['Buscar por EAN en MARA', 'Buscar por descripción en MAKT', 'Buscar por proveedor en EINA'],
@@ -93,13 +101,17 @@ const CREATION_FLOW = [
         step: 3,
         title: 'Creación del Material (MM01)',
         who: 'Analista Master Data',
+        icon: '🏗️',
+        color: '#0854A0',
+        roleColor: '#E8F4FD',
+        roleBorder: '#B3D7F2',
         action: 'Crear el registro maestro con todos los datos obligatorios',
         sapTx: '/nMM01',
         fields: [
-            'Vista Básica: MAKTX (descripción), MEINS (unidad base), MATKL (grupo)',
-            'Vista Compras: EKGRP (grupo compras), plazo entrega',
-            'Vista Contabilidad: Clase valoración, precio estándar',
-            'Vista MRP: MINBE (punto de reorden), MABST (stock seguridad)',
+            'Vista Básica: MAKTX, MEINS, MATKL',
+            'Vista Compras: EKGRP, plazo entrega',
+            'Vista Contabilidad: Clase valoración, precio',
+            'Vista MRP: MINBE, MABST',
         ],
         tips: 'TODAS las vistas deben estar completas. Un material incompleto genera errores en compras y ventas.'
     },
@@ -107,6 +119,10 @@ const CREATION_FLOW = [
         step: 4,
         title: 'Asignar Código EAN',
         who: 'Analista Master Data',
+        icon: '📊',
+        color: '#7C3AED',
+        roleColor: '#F5F3FF',
+        roleBorder: '#DDD6FE',
         action: 'Asignar EAN principal y secundarios si aplica',
         sapTx: '/nEAN',
         fields: ['EAN principal (GTIN-13)', 'EANs de caja/pack (GTIN-14)', 'Tipo EAN (HE, HK, etc.)'],
@@ -116,6 +132,10 @@ const CREATION_FLOW = [
         step: 5,
         title: 'Datos de Empaque y Peso',
         who: 'Ingeniero de Empaque',
+        icon: '📦',
+        color: '#D97706',
+        roleColor: '#FFFBEB',
+        roleBorder: '#FDE68A',
         action: 'Medir y pesar el producto, registrar dimensiones',
         sapTx: '/nMM02',
         fields: ['NTGEW (peso neto kg)', 'BRGEW (peso bruto kg)', 'GEWEI (unidad peso)', 'Largo, Ancho, Alto (cm)'],
@@ -125,6 +145,10 @@ const CREATION_FLOW = [
         step: 6,
         title: 'Parametrizar MRP',
         who: 'Analista de Compras',
+        icon: '⚙️',
+        color: '#059669',
+        roleColor: '#ECFDF5',
+        roleBorder: '#A7F3D0',
         action: 'Definir punto de reorden y stock de seguridad',
         sapTx: '/nMD04',
         fields: ['MINBE (punto de reorden)', 'MABST (stock de seguridad)', 'PLIFZ (plazo de entrega)', 'DISMM (tipo MRP)'],
@@ -134,6 +158,10 @@ const CREATION_FLOW = [
         step: 7,
         title: 'Verificación Final',
         who: 'Coordinador Supply Chain (TÚ)',
+        icon: '✅',
+        color: '#DC2626',
+        roleColor: '#FEF2F2',
+        roleBorder: '#FECACA',
         action: 'Revisar que el material esté completo en todas las vistas',
         sapTx: '/nSE16',
         fields: ['Verificar EAN asignado', 'Verificar peso y dimensiones', 'Verificar punto de reorden', 'Verificar precio'],
@@ -343,61 +371,122 @@ export default function MasterPlan({ materials = [], onNavigate, onClose, showSt
 
                         {/* ======== CEDULACIÓN ======== */}
                         {activeSection === 'cedula' && (
-                            <div className="max-w-4xl space-y-5">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <ClipboardList className="text-[#0854A0]" size={22} />
-                                    <h2 className="text-lg font-bold text-[#32363A]">Proceso de Cedulación (Creación de Material)</h2>
-                                </div>
-                                <div className="bg-[#FFF8E1] rounded-lg p-4 border border-[#FFE082] text-sm text-[#795548]">
-                                    <strong>La cedulación es el proceso de dar "identidad" a un material en SAP.</strong> Un material sin cédula completa es como una persona sin documento: existe pero no puede operar.
+                            <div className="max-w-5xl space-y-5">
+                                {/* Header */}
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0854A0] to-[#0A6ED1] flex items-center justify-center shadow-lg">
+                                        <ClipboardList className="text-white" size={20} />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-lg font-bold text-[#32363A]">Proceso de Cedulación</h2>
+                                        <p className="text-xs text-[#6A6D70]">7 pasos para dar identidad a cada material en SAP</p>
+                                    </div>
                                 </div>
 
-                                <div className="relative">
-                                    {/* Timeline */}
-                                    <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-[#0854A0]" />
+                                {/* Intro banner */}
+                                <div className="rounded-xl p-4 border border-[#FFE082] bg-gradient-to-r from-[#FFF8E1] to-[#FFFDE7] flex items-start gap-3">
+                                    <span className="text-2xl">💡</span>
+                                    <div className="text-sm text-[#795548]">
+                                        <strong>La cedulación es como darle "cédula de identidad" a un material.</strong> Sin ella, existe en el sistema pero no puede comprar, no puede vender, no puede moverse. Cada paso agrega datos críticos.
+                                    </div>
+                                </div>
 
+                                {/* Steps */}
+                                <div className="space-y-4">
                                     {CREATION_FLOW.map((cf, idx) => (
-                                        <div key={idx} className="relative pl-14 pb-6">
-                                            {/* Step circle */}
-                                            <div className="absolute left-3 top-1 w-7 h-7 rounded-full bg-[#0854A0] text-white flex items-center justify-center text-xs font-bold shadow">
-                                                {cf.step}
-                                            </div>
+                                        <div key={idx} className="group">
+                                            <div
+                                                className="bg-white rounded-xl border-l-4 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+                                                style={{ borderLeftColor: cf.color }}
+                                            >
+                                                {/* Card header */}
+                                                <div className="px-5 py-3 flex items-center gap-4">
+                                                    {/* Step badge */}
+                                                    <div
+                                                        className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm"
+                                                        style={{ background: `linear-gradient(135deg, ${cf.color}15, ${cf.color}25)` }}
+                                                    >
+                                                        <span className="text-2xl">{cf.icon}</span>
+                                                    </div>
 
-                                            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <h3 className="font-bold text-sm text-[#32363A]">{cf.title}</h3>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-[10px] bg-[#E8F4FD] text-[#0854A0] px-2 py-0.5 rounded font-medium">{cf.who}</span>
+                                                    {/* Title + Action */}
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 flex-wrap">
+                                                            <span
+                                                                className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                                                style={{ backgroundColor: cf.color, color: 'white' }}
+                                                            >
+                                                                PASO {cf.step}
+                                                            </span>
+                                                            <h3 className="font-bold text-[#32363A]">{cf.title}</h3>
+                                                        </div>
+                                                        <p className="text-xs text-[#6A6D70] mt-0.5">{cf.action}</p>
+                                                    </div>
+
+                                                    {/* Role + SAP Tx */}
+                                                    <div className="flex items-center gap-2 flex-shrink-0">
+                                                        <span
+                                                            className="text-[10px] font-semibold px-2.5 py-1 rounded-lg border"
+                                                            style={{ backgroundColor: cf.roleColor, borderColor: cf.roleBorder, color: cf.color }}
+                                                        >
+                                                            👤 {cf.who}
+                                                        </span>
                                                         {cf.sapTx && (
                                                             <button
                                                                 onClick={() => handleGoToTx(cf.sapTx)}
-                                                                className="text-[10px] bg-[#0854A0] text-white px-2 py-0.5 rounded font-mono hover:bg-[#0A6ED1] transition-colors cursor-pointer"
+                                                                className="text-[11px] font-mono font-bold px-3 py-1 rounded-lg text-white hover:opacity-90 transition-opacity cursor-pointer shadow-sm"
+                                                                style={{ backgroundColor: cf.color }}
                                                             >
                                                                 {cf.sapTx} →
                                                             </button>
                                                         )}
                                                     </div>
                                                 </div>
-                                                <p className="text-xs text-[#6A6D70] mb-2">{cf.action}</p>
 
-                                                <div className="bg-[#FAFAFA] rounded p-2 mb-2">
-                                                    <span className="text-[10px] font-bold text-[#6A6D70] uppercase">Campos/Acciones:</span>
-                                                    <ul className="mt-1 space-y-0.5">
+                                                {/* Fields grid */}
+                                                <div className="px-5 pb-3">
+                                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                                                         {cf.fields.map((f, i) => (
-                                                            <li key={i} className="text-xs text-[#32363A] flex items-start gap-1.5">
-                                                                <CheckCircle size={10} className="text-green-500 mt-0.5 flex-shrink-0" /> {f}
-                                                            </li>
+                                                            <div
+                                                                key={i}
+                                                                className="text-xs px-3 py-2 rounded-lg border flex items-start gap-1.5"
+                                                                style={{ backgroundColor: `${cf.color}08`, borderColor: `${cf.color}20` }}
+                                                            >
+                                                                <CheckCircle size={12} className="mt-0.5 flex-shrink-0" style={{ color: cf.color }} />
+                                                                <span className="text-[#32363A]">{f}</span>
+                                                            </div>
                                                         ))}
-                                                    </ul>
+                                                    </div>
                                                 </div>
 
-                                                <div className="text-[11px] text-[#E65100] flex items-start gap-1">
-                                                    <Zap size={11} className="mt-0.5 flex-shrink-0" />
-                                                    <em>{cf.tips}</em>
+                                                {/* Tip */}
+                                                <div className="mx-5 mb-4 rounded-lg px-3 py-2 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 flex items-start gap-2">
+                                                    <Zap size={13} className="text-amber-500 mt-0.5 flex-shrink-0" />
+                                                    <span className="text-[11px] text-amber-800"><strong>Tip:</strong> {cf.tips}</span>
                                                 </div>
                                             </div>
+
+                                            {/* Connector arrow between steps */}
+                                            {idx < CREATION_FLOW.length - 1 && (
+                                                <div className="flex justify-center py-1">
+                                                    <div className="flex flex-col items-center">
+                                                        <div className="w-0.5 h-3 bg-gray-300" />
+                                                        <ChevronRight size={14} className="text-gray-400 rotate-90" />
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
+                                </div>
+
+                                {/* Summary box */}
+                                <div className="bg-gradient-to-r from-[#0854A0] to-[#0A6ED1] rounded-xl p-5 text-white shadow-lg">
+                                    <h3 className="font-bold text-sm flex items-center gap-2 mb-2">
+                                        <CheckCircle size={16} /> Resultado Final
+                                    </h3>
+                                    <p className="text-xs text-white/90">
+                                        Cuando los 7 pasos están completos, el material tiene su <strong>cédula completa</strong>: puede ser comprado, almacenado, vendido, transportado y facturado sin errores. Cada campo vacío es un riesgo operacional.
+                                    </p>
                                 </div>
                             </div>
                         )}
