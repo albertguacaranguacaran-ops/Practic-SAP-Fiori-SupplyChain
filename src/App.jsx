@@ -34,6 +34,7 @@ import TeamOperations from './components/TeamOperations';
 import MasterPlan from './components/MasterPlan';
 import Presentation from './components/Presentation';
 import DataImporter from './components/DataImporter';
+import DataQuality from './components/DataQuality';
 import { useBilling } from './lib/useBilling';
 import { exportToExcel } from './utils/excelExport';
 
@@ -305,6 +306,12 @@ function App() {
         // Data Importer
         setModalMode('import');
         showInfo('Importador de Datos — Carga tu Excel de SAP');
+        break;
+
+      case '/nDQ':
+        // Data Quality
+        setModalMode('dq');
+        showInfo('Diagnóstico de Calidad de Datos — Analizando naming...');
         break;
 
       case '/nMENU':
@@ -965,6 +972,17 @@ function App() {
           onImport={(data, mode) => importMaterials(data, mode)}
           onClose={closeModal}
           currentCount={products.length}
+        />
+      )}
+
+      {modalMode === 'dq' && (
+        <DataQuality
+          materials={products}
+          onNavigate={(cmd) => {
+            setModalMode(null);
+            setTimeout(() => handleTransaction(cmd), 150);
+          }}
+          onClose={closeModal}
         />
       )}
 
