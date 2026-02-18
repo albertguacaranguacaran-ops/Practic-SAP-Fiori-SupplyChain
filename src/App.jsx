@@ -33,6 +33,7 @@ import EANManager from './components/EANManager';
 import TeamOperations from './components/TeamOperations';
 import MasterPlan from './components/MasterPlan';
 import Presentation from './components/Presentation';
+import DataImporter from './components/DataImporter';
 import { useBilling } from './lib/useBilling';
 import { exportToExcel } from './utils/excelExport';
 
@@ -45,6 +46,7 @@ function App() {
     loadFullDataset,
     createMaterial,
     updateMaterial,
+    importMaterials,
     loadMaterials
   } = useMaterials();
 
@@ -297,6 +299,12 @@ function App() {
         // Presentation
         setModalMode('pres');
         showInfo('Presentación Profesional — Use ← → o Espacio para navegar');
+        break;
+
+      case '/nIMPORT':
+        // Data Importer
+        setModalMode('import');
+        showInfo('Importador de Datos — Carga tu Excel de SAP');
         break;
 
       case '/nMENU':
@@ -949,6 +957,14 @@ function App() {
             setTimeout(() => handleTransaction(cmd), 150);
           }}
           onClose={closeModal}
+        />
+      )}
+
+      {modalMode === 'import' && (
+        <DataImporter
+          onImport={(data, mode) => importMaterials(data, mode)}
+          onClose={closeModal}
+          currentCount={products.length}
         />
       )}
 

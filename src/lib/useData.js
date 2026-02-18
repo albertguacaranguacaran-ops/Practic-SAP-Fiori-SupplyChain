@@ -197,6 +197,24 @@ export function useMaterials() {
         }
     }, [dataSource]);
 
+    // Import materials from external source (Excel, etc.)
+    const importMaterials = useCallback((importedData, mode = 'merge') => {
+        if (mode === 'replace') {
+            setMaterials(importedData);
+        } else {
+            // Merge: replace matches by id, add new ones
+            setMaterials(prev => {
+                const existingMap = new Map(prev.map(m => [m.id, m]));
+                for (const item of importedData) {
+                    existingMap.set(item.id, item);
+                }
+                return Array.from(existingMap.values());
+            });
+        }
+        setDataSource('imported');
+        return { success: true, count: importedData.length };
+    }, []);
+
     // Cargar al montar
     useEffect(() => {
         loadMaterials();
@@ -211,6 +229,7 @@ export function useMaterials() {
         loadFullDataset,
         createMaterial,
         updateMaterial,
+        importMaterials,
         getStats: () => getDataStats(materials)
     };
 }
