@@ -6,9 +6,9 @@ import ExcelJS from 'exceljs';
  * @param {Array} products - Products to export
  * @param {string} filename - Output filename
  */
-export async function exportToExcel(products, filename = 'DAKAFACIL_MM_Export') {
+export async function exportToExcel(products, filename = 'DATAELECTRIC_MM_Export') {
     const workbook = new ExcelJS.Workbook();
-    workbook.creator = 'Dakafacil SAP Prototype';
+    workbook.creator = 'Dataelectric SAP Simulator';
     workbook.created = new Date();
 
     // SAP Colors
@@ -52,7 +52,7 @@ export async function exportToExcel(products, filename = 'DAKAFACIL_MM_Export') 
     // Title row
     sheetFicha.mergeCells('A1:N1');
     const titleCell = sheetFicha.getCell('A1');
-    titleCell.value = 'DAKAFACIL - MAESTRO DE MATERIALES';
+    titleCell.value = 'DATAELECTRIC - MAESTRO DE MATERIALES';
     titleCell.font = { bold: true, size: 14, color: { argb: SAP_BLUE } };
     titleCell.alignment = { horizontal: 'center' };
 

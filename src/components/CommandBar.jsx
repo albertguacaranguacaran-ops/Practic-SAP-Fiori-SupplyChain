@@ -15,6 +15,8 @@ const TRANSACTIONS = {
     '/nMMBE': { name: 'Resumen Stocks', module: 'MM', description: 'Resumen de stocks por material' },
 
     // Warehouse/Logistics
+    '/nMIGO': { name: 'Movigo Mercancía', module: 'MM', description: 'Entrada/Salida de mercancías' },
+    '/nXK01': { name: 'Crear Acreedor', module: 'MM', description: 'Crear acreedor (Central)' },
     '/nLT01': { name: 'Crear Transfer.', module: 'WM', description: 'Crear orden de transferencia' },
     '/nLT21': { name: 'Visual. Transfer.', module: 'WM', description: 'Visualizar órdenes de transferencia' },
 
@@ -24,6 +26,15 @@ const TRANSACTIONS = {
     '/nVA03': { name: 'Visualizar Pedido', module: 'SD', description: 'Visualizar pedido de venta' },
     '/nVL01N': { name: 'Crear Entrega', module: 'SD', description: 'Crear entrega con referencia' },
     '/nVL02N': { name: 'Modificar Entrega', module: 'SD', description: 'Modificar entrega existente' },
+    '/nVF01': { name: 'Crear Factura', module: 'SD', description: 'Crear factura para entrega' },
+
+    // Purchasing (MM)
+    '/nME21N': { name: 'Crear Pedido', module: 'MM', description: 'Crear pedido de compra a proveedor' },
+    '/nME28': { name: 'Liberar Pedido', module: 'MM', description: 'Autorizar pedidos de compra' },
+    '/nME23N': { name: 'Visualizar Pedido', module: 'MM', description: 'Visualizar pedido de compra' },
+
+    // Inventory Management (MM-IM)
+    '/nMIGO': { name: 'Movigo Mercancía', module: 'MM', description: 'Entrada/Salida de mercancías' },
 
     // Custom Dakafacil
     '/nPACK': { name: 'Modelo Empaque', module: 'LOG', description: 'Calcular modelo de empaque y apilamiento' },
@@ -33,7 +44,18 @@ const TRANSACTIONS = {
     '/nSTATS': { name: 'Estadísticas', module: 'BI', description: 'Dashboard de estadísticas' },
 
     // System
-    '/nSE16': { name: 'Browser Datos', module: 'ABAP', description: 'Data Browser - Ver tablas' },
+    '/nSE16': { name: 'Browser Datos', module: 'ABAP', description: 'Data Browser - Ver tablas (Estándar)' },
+    '/nSE16N': { name: 'General Table Display', module: 'ABAP', description: 'Visualización general de tablas (Modo Experto)' },
+    '/nSQVI': { name: 'QuickViewer', module: 'ABAP', description: 'Generador de Reportes (Entrenamiento)' },
+    '/nECOMM': { name: 'E-commerce Strategy', description: 'Tablero Estratégico SCM' },
+    '/nMD04': { name: 'Stock Requirements List', description: 'Monitor de Disponibilidad (MRP)' },
+    '/nEAN': { name: 'Gestor EAN', module: 'MM', description: 'Gestión de múltiples códigos de barra (MEAN)' },
+    '/nTEAM': { name: 'Equipo SCM', module: 'SCM', description: 'Centro de Operaciones del Equipo Supply Chain' },
+    '/nGERENTE': { name: 'Descripción de Cargo', module: 'HR', description: 'Dashboard y Responsabilidades SCM' },
+    '/nJOB': { name: 'Descripción de Cargo', module: 'HR', description: 'Dashboard y Responsabilidades SCM' },
+    '/nMENU': { name: 'Menú SAP (Launchpad)', description: 'Ver todas las transacciones disponibles' },
+    '/nDIC': { name: 'Diccionario ABAP', module: 'BASIS', description: 'Referencia de Tablas y Campos' },
+    '/nJOB': { name: 'Descripción de Cargo', module: 'HR', description: 'Dashboard y Responsabilidades SCM' },
     '/nSU01': { name: 'Mant. Usuarios', module: 'BC', description: 'Mantenimiento de usuarios' },
     '/n': { name: 'Cancelar Trans.', module: 'SYS', description: 'Cancelar transacción actual' },
     '/nEX': { name: 'Salir Sistema', module: 'SYS', description: 'Cerrar sesión SAP' },
@@ -68,6 +90,14 @@ export default function CommandBar({ onExecute, currentTransaction }) {
         // Normalizar comando - muy flexible
         let normalizedCmd = cmd.trim();
 
+        // Corrección automática de typos comunes de teclado (Shift+7, AltGr+Q, etc)
+        normalizedCmd = normalizedCmd.replace(/^¾/, '/'); // Shift+6 en algunos teclados
+        normalizedCmd = normalizedCmd.replace(/^&/, '/');  // Shift+6
+        normalizedCmd = normalizedCmd.replace(/^7/, '/');  // Shift+7 (teclado español)
+        normalizedCmd = normalizedCmd.replace(/^'/, '/');  // Tecla ? en algunos layout
+        normalizedCmd = normalizedCmd.replace(/^\\/, '/'); // Backslash común
+
+
         // Si no empieza con /, agregarlo
         if (!normalizedCmd.startsWith('/')) {
             normalizedCmd = '/n' + normalizedCmd.toUpperCase();
@@ -88,9 +118,10 @@ export default function CommandBar({ onExecute, currentTransaction }) {
             // Mantener la transacción visible como en SAP real
             setCommand(normalizedCmd);
             setShowDropdown(false);
-        } else if (cmd.startsWith('/')) {
+        } else {
+            // Fallback: Check without specific matching logic or retry
             // Unknown transaction
-            onExecute('ERROR', { name: 'Error', description: `Transacción "${cmd}" no existe` });
+            onExecute('ERROR', { name: 'Error', description: `Transacción "${normalizedCmd}" no existe` });
         }
     };
 
@@ -109,10 +140,10 @@ export default function CommandBar({ onExecute, currentTransaction }) {
             <div className="flex items-center gap-3 mr-6 border-r border-gray-300 pr-6">
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-[#0854A0] rounded flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">DF</span>
+                        <span className="text-white font-bold text-sm">DE</span>
                     </div>
                     <div className="text-sm">
-                        <div className="font-semibold text-[#32363A]">Dakafacil S/4HANA</div>
+                        <div className="font-semibold text-[#32363A]">Dataelectric S/4HANA</div>
                         <div className="text-[10px] text-[#6A6D70]">Training Simulator v1.0</div>
                     </div>
                 </div>
@@ -253,7 +284,7 @@ export default function CommandBar({ onExecute, currentTransaction }) {
                         <div className="modal-header">
                             <span className="flex items-center gap-2">
                                 <HelpCircle size={18} />
-                                Guía de Transacciones SAP - Dakafacil Training
+                                Guía de Transacciones SAP - Dataelectric Training
                             </span>
                             <button onClick={() => setShowHelp(false)} className="text-[#6A6D70] hover:text-[#32363A]">✕</button>
                         </div>

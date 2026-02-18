@@ -7,11 +7,14 @@ import { calculateStackingFactor, calculateOrderLogistics } from '../utils/packa
 
 export default function SalesOrder({
     products,
+    customers,
+    onCreate,
     onClose,
     onStatusMessage
 }) {
     const [orderLines, setOrderLines] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState('');
+    const [selectedCustomer, setSelectedCustomer] = useState('');
     const [cantidad, setCantidad] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -28,6 +31,13 @@ export default function SalesOrder({
 
         const product = products.find(p => p.id === selectedProduct);
         if (!product) return;
+
+        // ATP Check (Simple Stock Check)
+        const currentStock = product.stockActual || 0;
+        if (cantidad > currentStock) {
+            onStatusMessage?.(`Stock insuficiente. Disponible: ${currentStock}`, 'error');
+            return;
+        }
 
         // Check if product already in order
         const existingIndex = orderLines.findIndex(l => l.product.id === selectedProduct);
@@ -66,15 +76,29 @@ export default function SalesOrder({
 
     // Save order
     const handleSave = () => {
+        if (!selectedCustomer) {
+            onStatusMessage?.('Debe seleccionar un cliente (Solicitante)', 'error');
+            return;
+        }
         if (orderLines.length === 0) {
             onStatusMessage?.('No hay líneas en el pedido', 'error');
             return;
         }
 
-        // Simulate save
-        const orderNumber = `PV-${Date.now().toString().slice(-8)}`;
-        onStatusMessage?.(`Pedido ${orderNumber} creado exitosamente. ${logistics?.totalPallets} pallets.`, 'success');
-        onClose();
+        const orderData = {
+            kunnr: selectedCustomer,
+            items: orderLines.map(l => ({
+                material: l.product.id,
+                description: l.product.descripcion,
+                quantity: l.cantidad,
+                price: l.product.precioBase,
+                total: l.product.precioBase * l.cantidad
+            })),
+            totalValue,
+            logistics
+        };
+
+        onCreate(orderData);
     };
 
     return (
@@ -96,6 +120,29 @@ export default function SalesOrder({
                     <div className="grid grid-cols-3 gap-6">
                         {/* Left: Order Lines */}
                         <div className="col-span-2">
+                            {/* Customer Selector */}
+                            <div className="bg-white p-4 rounded border border-[#C4C4C4] mb-4 flex items-center gap-4">
+                                <div className="flex-1">
+                                    <label className="block text-xs font-bold text-[#6A6D70] mb-1">Solicitante (Cliente)</label>
+                                    <select
+                                        className="sap-input w-full font-bold text-[#0854A0]"
+                                        value={selectedCustomer}
+                                        onChange={e => setSelectedCustomer(e.target.value)}
+                                    >
+                                        <option value="">-- Seleccionar Cliente --</option>
+                                        {customers?.map(c => (
+                                            <option key={c.id} value={c.id}>
+                                                {c.id} - {c.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="w-1/3">
+                                    <label className="block text-xs font-bold text-[#6A6D70] mb-1">Org. Ventas</label>
+                                    <input type="text" value="1000 - Daka Ventas" disabled className="sap-input bg-gray-100" />
+                                </div>
+                            </div>
+
                             {/* Add Line Form */}
                             <div className="bg-[#F2F2F2] p-4 rounded mb-4">
                                 <h4 className="font-semibold mb-3 flex items-center gap-2">

@@ -88,7 +88,7 @@ export default function StatusBar({
                 <div className="flex items-center gap-1">
                     <span className="font-semibold">SRV:</span>
                     <span className="text-[#107E3E]">●</span>
-                    <span>DAKAFACIL-PRD</span>
+                    <span>DATAELECTRIC-PRD</span>
                 </div>
             </div>
         </div>

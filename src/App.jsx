@@ -9,10 +9,29 @@ import MaterialDetail from './components/MaterialDetail';
 import SalesOrder from './components/SalesOrder';
 import SQLBrowser from './components/SQLBrowser';
 import FioriLaunchpad from './components/FioriLaunchpad';
+import RoadmapViewer from './components/RoadmapViewer';
 
 // Data & Utils - Hybrid Supabase/Local
 import { useMaterials, useConnectionStatus } from './lib/useData';
+import { useVendors } from './lib/useVendors';
+import { usePurchaseOrders } from './lib/usePurchaseOrders';
+import { useCustomers } from './lib/useCustomers';
+import { useSalesOrders } from './lib/useSalesOrders';
 import { getDataStats } from './data/dakaProducts';
+import PurchaseOrder from './components/PurchaseOrder';
+import GoodsMovement from './components/GoodsMovement';
+import VendorMaster from './components/VendorMaster';
+import ReleaseOrder from './components/ReleaseOrder';
+import OutboundDelivery from './components/OutboundDelivery';
+import DataDictionary from './components/DataDictionary';
+import Billing from './components/Billing';
+import ManagerDashboard from './components/ManagerDashboard';
+import SQVI from './components/SQVI';
+import EcommerceMonitor from './components/EcommerceMonitor';
+import MD04 from './components/MD04';
+import EANManager from './components/EANManager';
+import TeamOperations from './components/TeamOperations';
+import { useBilling } from './lib/useBilling';
 import { exportToExcel } from './utils/excelExport';
 
 function App() {
@@ -26,6 +45,17 @@ function App() {
     updateMaterial,
     loadMaterials
   } = useMaterials();
+
+  // Vendor Hook
+  const { createVendor, vendors } = useVendors();
+
+  // Customer Hook
+  const { customers } = useCustomers();
+
+  // PO & SO Hooks
+  const { createOrder, releaseOrder, orders } = usePurchaseOrders();
+  const { createSalesOrder, createDelivery, orders: salesOrders, loading: salesLoading } = useSalesOrders();
+  const { createInvoice } = useBilling({ orders: salesOrders }); // Pass salesOrders to Billing hook
 
   const connectionStatus = useConnectionStatus();
 
@@ -125,6 +155,30 @@ function App() {
         showInfo(`Visualizando ${allCount.toLocaleString()} materiales`);
         break;
 
+      case '/nME21N':
+        // Create purchase order
+        setModalMode('po');
+        showInfo('Transacción ME21N - Crear Pedido de Compra');
+        break;
+
+      case '/nME28':
+        // Release purchase order
+        setModalMode('release');
+        showInfo('Transacción ME28 - Liberar documentos de compra');
+        break;
+
+      case '/nMIGO':
+        // Goods movement
+        setModalMode('migo');
+        showInfo('Transacción MIGO - Movimiento de Mercancías');
+        break;
+
+      case '/nXK01':
+        // Create Vendor (Central)
+        setModalMode('vendor');
+        showInfo('Transacción XK01 - Crear Acreedor (Central)');
+        break;
+
       case '/nVA01':
         // Create sales order
         setModalMode('sales');
@@ -188,9 +242,53 @@ function App() {
         break;
 
       case '/nSE16':
+      case '/nSE16N':
         // Open SQL Browser
         setModalMode('sql');
-        showInfo('Transacción SE16 - Data Browser');
+        showInfo(code === '/nSE16N' ? 'Transacción SE16N - Visualización General de Tablas' : 'Transacción SE16 - Data Browser');
+        break;
+
+      case '/nJOB':
+      case '/nGERENTE':
+        // Manager Dashboard / Job Description
+        setModalMode('manager');
+        showInfo('Descripción de Cargo - Gerencia Supply Chain');
+        break;
+
+      case '/nSQVI':
+        // Report Generator Simulator
+        setModalMode('sqvi');
+        showInfo('QuickViewer: Generador de Reportes (Entrenamiento)');
+        break;
+
+      case '/nECOMM':
+        // E-commerce Strategy Dashboard
+        setModalMode('ecomm');
+        showInfo('Tablero Estratégico E-commerce (Plan 36k)');
+        break;
+
+      case '/nMD04':
+        // Stock/Requirements List
+        setModalMode('md04');
+        showInfo('MD04 - Lista de Necesidades/Stock');
+        break;
+
+      case '/nEAN':
+        // EAN Manager
+        setModalMode('ean');
+        showInfo('Gestión de Códigos EAN - Múltiples Códigos de Barra');
+        break;
+
+      case '/nTEAM':
+        // Team Operations Center
+        setModalMode('team');
+        showInfo('Centro de Operaciones - Equipo Supply Chain');
+        break;
+
+      case '/nMENU':
+        // Open Fiori Launchpad
+        setShowLaunchpad(true);
+        showInfo('Abriendo Menú SAP Easy Access (Launchpad)');
         break;
 
       // ============ MATERIAL MASTER ADICIONALES ============
@@ -232,8 +330,9 @@ function App() {
         break;
 
       case '/nVL01N':
-        // Create delivery  
-        showInfo('Transacción VL01N - Crear Entrega. Requiere un pedido de venta existente (VA01).');
+        // Create delivery
+        setModalMode('delivery');
+        showInfo('Transacción VL01N - Crear Entrega de Salida');
         break;
 
       case '/nVL02N':
@@ -260,7 +359,19 @@ function App() {
       // ============ SISTEMA ============
       case '/nSU01':
         // User maintenance
-        showInfo('Usuario actual: CONSULTOR01 | Rol: Consultor SAP MM/SD | Centro: 1000 DAKA CARACAS');
+        showInfo('Usuario actual: CONSULTOR01 | Rol: Coordinador Supply Chain | Centro: 1000 DATAELECTRIC CCS');
+        break;
+
+      case '/nDIC':
+        // Data Dictionary
+        setModalMode('dictionary');
+        showInfo('Diccionario de Datos - Referencia Técnica');
+        break;
+
+      case '/nVF01':
+        // Billing
+        setModalMode('billing');
+        showInfo('Transacción VF01 - Crear Factura');
         break;
 
       case '/nEX':
@@ -340,15 +451,24 @@ function App() {
         <div className="flex items-center gap-4">
           <div className="sap-logo flex items-center gap-2">
             <div className="w-7 h-7 bg-white rounded flex items-center justify-center">
-              <span className="text-[#0854A0] font-bold text-xs">DF</span>
+              <span className="text-[#0854A0] font-bold text-xs">DE</span>
             </div>
-            <span>Dakafacil</span>
+            <span>Dataelectric</span>
           </div>
           <span className="text-white/60 text-sm">|</span>
           <span className="text-white/80 text-sm">SAP S/4HANA Training Simulator</span>
         </div>
 
         <div className="ml-auto flex items-center gap-4 text-white/80 text-sm">
+          {/* Help / Dictionary Button */}
+          <button
+            onClick={() => handleTransaction('/nDIC', { name: 'Diccionario', description: 'Abrir ayuda' })}
+            className="p-1.5 bg-white/10 hover:bg-white/20 rounded-full transition-colors mr-2"
+            title="Diccionario de Datos (/nDIC)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+          </button>
+
           {/* Fiori Launchpad Button */}
           <button
             onClick={() => setShowLaunchpad(true)}
@@ -467,6 +587,16 @@ function App() {
       {modalMode === 'sales' && (
         <SalesOrder
           products={products}
+          customers={customers}
+          onCreate={async (order) => {
+            try {
+              const result = await createSalesOrder(order);
+              showSuccess(`Pedido de Venta ${result.id} creado correctamente`);
+              closeModal();
+            } catch (e) {
+              showError(`Error al crear pedido: ${e.message}`);
+            }
+          }}
           onClose={closeModal}
           onStatusMessage={(msg, type) => {
             if (type === 'success') showSuccess(msg);
@@ -479,6 +609,7 @@ function App() {
       {/* SQL Browser Modal */}
       {modalMode === 'sql' && (
         <SQLBrowser
+          data={products}
           onClose={closeModal}
           onStatusMessage={(msg, type) => {
             if (type === 'success') showSuccess(msg);
@@ -489,18 +620,294 @@ function App() {
         />
       )}
 
-      {/* Fiori Launchpad */}
-      {showLaunchpad && (
-        <FioriLaunchpad
-          onExecuteTransaction={(code) => {
-            const info = TRANSACTIONS[code];
-            if (info) handleTransaction(code, info);
-          }}
-          onClose={() => setShowLaunchpad(false)}
-          stats={stats}
-        />
+      {/* Roadmap Viewer */}
+      {modalMode === 'roadmap' && (
+        <RoadmapViewer onClose={closeModal} />
       )}
-    </div>
+
+      {/* Purchase Order Modal */}
+      {modalMode === 'po' && (
+        <div className="fixed inset-0 z-50 bg-[#F5F7FA] flex flex-col">
+          <div className="bg-[#0854A0] text-white px-4 py-2 flex items-center justify-between shadow-md">
+            <span className="font-bold text-sm">Crear Pedido Estándar</span>
+            <button onClick={closeModal} className="hover:bg-white/20 p-1 rounded">✕</button>
+          </div>
+          <div className="flex-1 overflow-hidden">
+            <PurchaseOrder
+              onSave={createOrder}
+              onCancel={closeModal}
+              vendors={vendors}
+              materials={products}
+              showStatus={(msg, type) => {
+                if (type === 'success') showSuccess(msg);
+                else if (type === 'error') showError(msg);
+                else showInfo(msg);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Release Order Modal */}
+      {modalMode === 'release' && (
+        <div className="fixed inset-0 z-50 bg-[#F5F7FA] flex flex-col">
+          <div className="bg-[#0854A0] text-white px-4 py-2 flex items-center justify-between shadow-md">
+            <span className="font-bold text-sm">Liberar Documentos de Compra</span>
+            <button onClick={closeModal} className="hover:bg-white/20 p-1 rounded">✕</button>
+          </div>
+          <div className="flex-1 overflow-hidden">
+            <ReleaseOrder
+              orders={orders}
+              onRelease={releaseOrder}
+              onClose={closeModal}
+              showStatus={(msg, type) => {
+                if (type === 'success') showSuccess(msg);
+                else if (type === 'error') showError(msg);
+                else showInfo(msg);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+
+      {/* Outbound Delivery Modal */}
+      {
+        modalMode === 'delivery' && (
+          <OutboundDelivery
+            orders={salesOrders}
+            products={products}
+            onClose={closeModal}
+            showStatus={(msg, type) => {
+              if (type === 'success') showSuccess(msg);
+              else if (type === 'error') showError(msg);
+              else showInfo(msg);
+            }}
+            onPost={async (orderId, pickedItems) => {
+              try {
+                // 1. Deduct Stock
+                for (const [matId, qty] of Object.entries(pickedItems)) {
+                  const product = products.find(p => p.id === matId);
+                  if (product) {
+                    const newStock = (product.stockActual || 0) - qty;
+                    // Ensure we don't go below zero? SAP allows negative stock if configured, but let's be safe.
+                    await updateMaterial({ ...product, stockActual: newStock });
+                  }
+                }
+                // 2. Update Order Status
+                await createDelivery(orderId);
+              } catch (e) {
+                showError('Error finalizing delivery: ' + e.message);
+                throw e; // Propagate to component
+              }
+            }}
+          />
+        )
+      }
+
+      {/* MIGO Modal */}
+      {
+        modalMode === 'migo' && (
+          <div className="fixed inset-0 z-50 bg-[#F5F7FA] flex flex-col">
+            <div className="bg-[#0854A0] text-white px-4 py-2 flex items-center justify-between shadow-md">
+              <span className="font-bold text-sm">MIGO - Movimiento de Mercancías</span>
+              <button onClick={closeModal} className="hover:bg-white/20 p-1 rounded">✕</button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <GoodsMovement
+                showStatus={(msg, type) => {
+                  if (type === 'success') showSuccess(msg);
+                  else if (type === 'error') showError(msg);
+                  else showInfo(msg);
+                }}
+                onClose={closeModal}
+                onFindPO={(poId) => orders.find(o => o.EBELN === poId && o.STATUS === 'Released')}
+                onPost={async (data) => {
+                  try {
+                    // Find product (Case insensitive and fuzzy)
+                    const searchMat = data.material.toUpperCase();
+                    const product = products.find(p =>
+                      p.id === searchMat ||
+                      p.id.toUpperCase() === searchMat ||
+                      p.id.endsWith(searchMat) ||
+                      (p.ean && p.ean === searchMat)
+                    );
+
+                    if (!product) {
+                      showError(`Error MIGO: Material "${data.material}" no existe en centro 1000`);
+                      return;
+                    }
+
+                    // Update stock
+                    let newStock = product.stockActual;
+                    if (data.claseMov === '101' || data.claseMov === '501' || data.claseMov === '561') {
+                      newStock += parseInt(data.cantidad);
+                    } else {
+                      newStock -= parseInt(data.cantidad);
+                    }
+
+                    // Save changes
+                    const updatedProduct = { ...product, stockActual: newStock };
+                    await updateMaterial(updatedProduct);
+
+                    // If linked to PO, close it
+                    if (data.refDoc) {
+                      await receiveOrder(data.refDoc);
+                    }
+
+                    showSuccess(`Documento material ${data.docMaterial} contabilizado. Nuevo stock: ${newStock}`);
+                    setTimeout(() => closeModal(), 2000);
+                  } catch (err) {
+                    showError('Error al contabilizar: ' + err.message);
+                  }
+                }}
+              />
+            </div>
+          </div>
+        )
+      }
+
+      {/* Vendor Master Modal */}
+      {
+        modalMode === 'vendor' && (
+          <VendorMaster
+            onClose={closeModal}
+            onSave={createVendor}
+            onStatusMessage={(msg, type) => {
+              if (type === 'success') showSuccess(msg);
+              else if (type === 'error') showError(msg);
+              else showInfo(msg);
+            }}
+          />
+        )
+      }
+
+      {/* Fiori Launchpad */}
+      {
+        showLaunchpad && (
+          <FioriLaunchpad
+            onExecuteTransaction={(code) => {
+              const info = TRANSACTIONS[code];
+              if (info) handleTransaction(code, info);
+            }}
+            onClose={() => setShowLaunchpad(false)}
+            stats={stats}
+          />
+        )
+      }
+      {/* Data Dictionary Modal */}
+      {
+        modalMode === 'dictionary' && (
+          <DataDictionary onClose={closeModal} />
+        )
+      }
+
+      {/* Billing Modal */}
+      {
+        modalMode === 'billing' && (
+          <Billing
+            orders={salesOrders}
+            onCreateInvoice={createInvoice}
+            onClose={closeModal}
+            showStatus={(msg, type) => {
+              if (type === 'success') showSuccess(msg);
+              else if (type === 'error') showError(msg);
+              else showInfo(msg);
+            }}
+          />
+        )
+      }
+
+      {/* Manager Dashboard Modal */}
+      {
+        modalMode === 'manager' && (
+          <ManagerDashboard
+            onClose={closeModal}
+            onNavigate={(cmd) => {
+              setModalMode(null);
+              setTimeout(() => handleTransaction(cmd), 100);
+            }}
+            data={{
+              salesOrders,
+              purchaseOrders: orders,
+              products
+            }}
+          />
+        )
+      }
+
+
+
+      {/* SQVI Simulator Modal */}
+      {
+        modalMode === 'sqvi' && (
+          <SQVI onClose={closeModal} />
+        )
+      }
+
+      {/* E-commerce Monitor Modal */}
+      {
+        modalMode === 'ecomm' && (
+          <EcommerceMonitor onClose={closeModal} />
+        )
+      }
+
+      {/* MD04 Monitor */}
+      {
+        modalMode === 'md04' && (
+          <MD04
+            onClose={closeModal}
+            onNavigate={(cmd) => {
+              setModalMode(null);
+              setTimeout(() => handleTransaction(cmd), 100);
+            }}
+          />
+        )
+      }
+
+      {/* EAN Manager */}
+      {
+        modalMode === 'ean' && (
+          <EANManager
+            materials={products}
+            onUpdateMaterial={async (updatedMat) => {
+              const result = await updateMaterial(updatedMat);
+              if (result.success) {
+                applyFilter(activeFilter);
+              }
+            }}
+            onClose={closeModal}
+            showStatus={(msg, type) => {
+              if (type === 'success') showSuccess(msg);
+              else if (type === 'error') showError(msg);
+              else if (type === 'warning') showWarning(msg);
+              else showInfo(msg);
+            }}
+          />
+        )
+      }
+
+      {/* Team Operations Center */}
+      {
+        modalMode === 'team' && (
+          <TeamOperations
+            materials={products}
+            onNavigate={(cmd) => {
+              setModalMode(null);
+              setTimeout(() => handleTransaction(cmd), 150);
+            }}
+            onClose={closeModal}
+            showStatus={(msg, type) => {
+              if (type === 'success') showSuccess(msg);
+              else if (type === 'error') showError(msg);
+              else if (type === 'warning') showWarning(msg);
+              else showInfo(msg);
+            }}
+          />
+        )
+      }
+
+    </div >
   );
 }
 

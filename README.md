@@ -1,4 +1,4 @@
-# 🏪 Dakafacil SAP S/4HANA Training Simulator
+# 🏪 Dataelectric SAP S/4HANA Training Simulator
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-18.x-61DAFB?logo=react" alt="React" />

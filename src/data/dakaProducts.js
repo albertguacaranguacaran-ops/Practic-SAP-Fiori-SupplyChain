@@ -88,6 +88,7 @@ const generateProduct = (id, category, productDef, sizeIndex, brandIndex, colorI
     return {
         id: `${cat.prefix}-${String(id).padStart(6, '0')}`,
         ean: generateEAN('759'),
+        additionalEans: [], // EANs adicionales (tabla MEAN en SAP)
         descripcion: `${productDef.base} ${brand} ${size} ${color}`,
         marca: brand,
         modelo: `${brand.slice(0, 2)}${randInt(1000, 9999)}`,
@@ -183,6 +184,21 @@ export function generateDakafacilProducts(count = 36000) {
                                 product.ancho = null;
                                 product.alto = null;
                                 product.alertas.push('Datos incompletos');
+                            }
+
+                            // 5% - Multiple EANs (problema de múltiples códigos de barra)
+                            if (Math.random() < 0.05) {
+                                const extraCount = randInt(1, 3);
+                                const reasons = ['Error de captura', 'Empaque diferente', 'Código proveedor', 'Re-etiquetado', 'Importación'];
+                                for (let e = 0; e < extraCount; e++) {
+                                    product.additionalEans.push({
+                                        ean: generateEAN('759'),
+                                        type: e === 0 ? 'HK' : 'HE', // HK=Alterno, HE=Unidad base
+                                        reason: reasons[randInt(0, reasons.length - 1)],
+                                        createdAt: randomDate(2022, 2025)
+                                    });
+                                }
+                                product.alertas.push(`${extraCount} EAN(s) adicional(es)`);
                             }
 
                             // Check overweight (>50kg)

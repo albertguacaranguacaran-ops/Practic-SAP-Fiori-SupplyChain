@@ -3,7 +3,7 @@ import {
     Package, ShoppingCart, Truck, FileText, BarChart2,
     Warehouse, DollarSign, Users, Settings, Database,
     Box, AlertTriangle, TrendingDown, Scale, Search,
-    Grid, Home, Star, Clock, ChevronRight
+    Grid, Home, Star, Clock, ChevronRight, Briefcase
 } from 'lucide-react';
 
 // SAP Fiori Tile Groups - Organized like real SAP Fiori Launchpad
@@ -97,7 +97,7 @@ const TILE_GROUPS = [
     {
         id: 'analytics',
         title: 'Análisis y Reportes',
-        subtitle: 'Dakafacil Analytics',
+        subtitle: 'Dataelectric Analytics',
         tiles: [
             {
                 id: 'dup',
@@ -133,6 +133,40 @@ const TILE_GROUPS = [
                 subtitle: 'Cálculo de empaque',
                 icon: Box,
                 color: '#0854A0',
+                count: null
+            },
+        ]
+    },
+    {
+        id: 'scm',
+        title: 'Gerencia y Estrategia',
+        subtitle: 'SCM - Supply Chain Management',
+        tiles: [
+            {
+                id: 'ecomm',
+                code: '/nECOMM',
+                title: 'E-commerce Strategy',
+                subtitle: 'Tablero 36k SKU',
+                icon: BarChart2,
+                color: '#6F42C1',
+                count: null
+            },
+            {
+                id: 'md04',
+                code: '/nMD04',
+                title: 'Lista Nec./Stock',
+                subtitle: 'Monitor MRP',
+                icon: TrendingDown,
+                color: '#E9730C',
+                count: null
+            },
+            {
+                id: 'job',
+                code: '/nGERENTE',
+                title: 'Gerencia SCM',
+                subtitle: 'Descripción Cargo',
+                icon: Briefcase,
+                color: '#107E3E',
                 count: null
             },
         ]
@@ -205,7 +239,7 @@ export default function FioriLaunchpad({ onExecuteTransaction, onClose, stats = 
                     </div>
                     <div>
                         <h1 className="text-xl font-semibold text-white">SAP Fiori Launchpad</h1>
-                        <p className="text-sm text-white/60">Dakafacil Training Simulator</p>
+                        <p className="text-sm text-white/60">Dataelectric Training Simulator</p>
                     </div>
                 </div>
 
