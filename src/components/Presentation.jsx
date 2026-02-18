@@ -1,476 +1,329 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
-    ChevronLeft, ChevronRight, Maximize2, Minimize2,
-    CheckCircle, AlertTriangle, Package, Users, BarChart3,
-    Target, Briefcase, Tag, ClipboardList, Calendar,
-    Database, TrendingUp, ArrowRight, Zap, Shield,
-    Layers, BookOpen, Play
+    ChevronLeft, ChevronRight, CheckCircle, AlertTriangle,
+    ArrowRight, Zap, Play, X
 } from 'lucide-react';
 
-// ========== SLIDE DATA ==========
-function buildSlides(metrics) {
+/*
+ * ══════════════════════════════════════════════════════════════
+ *   WORLD-CLASS PRESENTATION — /nPRES
+ *   Standards applied:
+ *   • McKinsey: Pyramid Principle, action titles, SCR flow
+ *   • Apple:    1 idea per slide, 3-second comprehension
+ *   • 2025:    Bold minimalism, big numbers, contrast
+ * ══════════════════════════════════════════════════════════════
+ */
+
+// =============================================
+//  SLIDE DATA BUILDER
+// =============================================
+function buildSlides(m) {
+    const pctSinEAN = m.total ? ((m.sinEAN / m.total) * 100).toFixed(0) : 0;
+    const pctSinPeso = m.total ? ((m.sinPeso / m.total) * 100).toFixed(0) : 0;
+    const pctSinReorden = m.total ? ((m.sinReorden / m.total) * 100).toFixed(0) : 0;
+    const costoFlete = (m.sinPeso * 0.15 * 12).toFixed(0); // Estimated annual impact
+
     return [
-        // ===== SLIDE 0: TITLE =====
+        // ── 0  OPENING ──────────────────────────────────
         {
-            id: 'title',
-            layout: 'hero',
-            bg: 'from-[#0854A0] via-[#0A6ED1] to-[#354A5F]',
-            content: {
-                overtitle: 'DATAELECTRIC — SAP S/4HANA Training Simulator',
-                title: 'Plan de Gestión de Datos Maestros',
-                subtitle: 'Coordinador Supply Chain — Daka Venezuela',
-                caption: 'Estrategia de limpieza, estandarización y control de +36,000 materiales',
-                footer: 'Febrero 2026'
-            }
+            id: 'opening', layout: 'bigText',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            line1: 'DATAELECTRIC',
+            line2: 'Plan de Gestión de Datos Maestros',
+            line3: 'Coordinador Supply Chain · Daka Venezuela · 2026',
         },
 
-        // ===== SLIDE 1: THE PROBLEM =====
+        // ── 1  THE NUMBER ─────────────────────────────────
         {
-            id: 'problem',
-            layout: 'cards',
-            bg: 'from-[#1a1a2e] to-[#16213e]',
-            content: {
-                overtitle: 'EL DESAFÍO',
-                title: '¿Cuál es el problema actual?',
-                subtitle: 'Cada campo vacío en SAP es un riesgo operacional que cuesta dinero',
-                cards: [
-                    {
-                        icon: '🔴', value: metrics.sinEAN.toLocaleString(),
-                        label: 'Sin Código EAN',
-                        desc: 'No se pueden escanear en punto de venta. Ventas perdidas.',
-                        color: '#EF4444'
-                    },
-                    {
-                        icon: '🟠', value: metrics.sinPeso.toLocaleString(),
-                        label: 'Sin Peso / Dimensiones',
-                        desc: 'No se puede calcular flete ni cubicaje. Sobrecostos.',
-                        color: '#F59E0B'
-                    },
-                    {
-                        icon: '🟡', value: metrics.sinReorden.toLocaleString(),
-                        label: 'Sin Punto de Reorden',
-                        desc: 'SAP no alerta cuando hay que comprar. Quiebres de stock.',
-                        color: '#EAB308'
-                    },
-                    {
-                        icon: '🟣', value: metrics.sinDesc.toLocaleString(),
-                        label: 'Sin Descripción',
-                        desc: 'Nadie sabe qué es. Genera duplicados y confusión.',
-                        color: '#8B5CF6'
-                    }
-                ]
-            }
+            id: 'theNumber', layout: 'bigNumber',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            number: m.total.toLocaleString(),
+            label: 'materiales en el sistema',
+            sub: '¿Cuántos están realmente listos para operar?',
         },
 
-        // ===== SLIDE 2: THE SOLUTION =====
+        // ── 2  SITUATION ─────────────────────────────────
         {
-            id: 'solution',
-            layout: 'split',
-            bg: 'from-[#0854A0] to-[#0A6ED1]',
-            content: {
-                overtitle: 'LA SOLUCIÓN',
-                title: 'Un simulador para aprender y planificar',
-                left: {
-                    title: 'Lo que construimos',
-                    items: [
-                        { icon: '📋', text: 'Plan Maestro con naming y cedulación (/nPLAN)' },
-                        { icon: '👥', text: 'Centro de Operaciones del Equipo (/nTEAM)' },
-                        { icon: '🔗', text: 'Data Browser con JOINs diagnósticos (/nSE16N)' },
-                        { icon: '📊', text: 'Gestor de códigos EAN múltiples (/nEAN)' },
-                        { icon: '🚀', text: 'Tablero estratégico E-commerce (/nECOMM)' },
-                        { icon: '📈', text: 'Monitor MRP y disponibilidad (/nMD04)' },
-                    ]
+            id: 'situation', layout: 'statRow',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            actionTitle: 'La calidad de datos maestros compromete la operación',
+            stats: [
+                { big: `${pctSinEAN}%`, label: 'sin código EAN', sub: 'No se escanean en POS', color: '#EF4444' },
+                { big: `${pctSinPeso}%`, label: 'sin peso/dimensiones', sub: 'Flete sin calcular', color: '#F59E0B' },
+                { big: `${pctSinReorden}%`, label: 'sin punto de reorden', sub: 'Sin alertas de compra', color: '#8B5CF6' },
+            ],
+        },
+
+        // ── 3  COMPLICATION — MONEY ─────────────────────
+        {
+            id: 'money', layout: 'bigNumber',
+            bg: 'from-[#7f1d1d] to-[#991b1b]',
+            number: `$${Number(costoFlete).toLocaleString()}`,
+            label: 'costo estimado anual en sobrecostos de flete',
+            sub: 'Porque no tenemos pesos ni dimensiones para calcular cubicaje',
+        },
+
+        // ── 4  THE FIX — BEFORE vs AFTER ─────────────────
+        {
+            id: 'naming', layout: 'contrast',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            actionTitle: 'Estandarizar la descripción elimina duplicados y confusión',
+            before: [
+                'nevera gris',
+                'cable',
+                'tubo',
+            ],
+            after: [
+                'REFRIGERADOR SAMSUNG RT38 380L INOX',
+                'CABLE ELECTRICO THW 12AWG 100M',
+                'TUBO PVC 1/2" SCH40 6M PAVCO',
+            ],
+            rule: 'TIPO + MARCA + MODELO + ESPECIFICACIÓN + MEDIDA',
+        },
+
+        // ── 5  CEDULACIÓN ────────────────────────────────
+        {
+            id: 'cedula', layout: 'process',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            actionTitle: '7 pasos dan identidad completa a cada material',
+            steps: [
+                { n: '01', icon: '📝', name: 'Solicitud', who: 'Compras' },
+                { n: '02', icon: '🔍', name: 'Validar', who: 'Master Data' },
+                { n: '03', icon: '🏗️', name: 'Crear MM01', who: 'Master Data' },
+                { n: '04', icon: '📊', name: 'Asignar EAN', who: 'Master Data' },
+                { n: '05', icon: '📦', name: 'Empaque', who: 'Ing. Empaque' },
+                { n: '06', icon: '⚙️', name: 'MRP', who: 'Compras' },
+                { n: '07', icon: '✅', name: 'Verificar', who: 'TÚ' },
+            ],
+        },
+
+        // ── 6  WHAT WE BUILT ─────────────────────────────
+        {
+            id: 'tools', layout: 'grid6',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            actionTitle: 'Construimos 6 herramientas que no existían',
+            items: [
+                { icon: '📋', title: 'Plan Maestro', code: '/nPLAN', desc: 'Naming + Cedulación + Plan 30-60-90' },
+                { icon: '👥', title: 'Mi Equipo', code: '/nTEAM', desc: 'Roles, tareas y KPIs' },
+                { icon: '🔗', title: 'Data Browser+', code: '/nSE16N', desc: 'JOINs diagnósticos + Tutorial' },
+                { icon: '📊', title: 'Gestor EAN', code: '/nEAN', desc: 'Múltiples códigos de barra' },
+                { icon: '🚀', title: 'E-commerce', code: '/nECOMM', desc: 'Tablero estratégico 36k SKU' },
+                { icon: '📥', title: 'Importador', code: '/nIMPORT', desc: 'Cargar datos reales de SAP' },
+            ],
+        },
+
+        // ── 7  TEAM ──────────────────────────────────────
+        {
+            id: 'team', layout: 'team4',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            actionTitle: 'Un equipo de 4 personas ejecuta el plan completo',
+            members: [
+                { role: 'Coordinador SCM', focus: 'Estrategia y KPIs', emoji: '🎯', you: true },
+                { role: 'Analista Datos 1', focus: 'Calidad: EAN y descripciones', emoji: '🔍', you: false },
+                { role: 'Analista Datos 2', focus: 'Inventarios y reorden', emoji: '📦', you: false },
+                { role: 'Ing. Empaque', focus: 'Pesos, medidas, cubicaje', emoji: '📐', you: false },
+            ],
+        },
+
+        // ── 8  30-60-90 ──────────────────────────────────
+        {
+            id: 'plan309060', layout: 'timeline3',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            actionTitle: 'En 90 días pasamos de diagnóstico a proceso sostenible',
+            phases: [
+                {
+                    day: '1-30', label: 'DIAGNÓSTICO', color: '#EF4444',
+                    tasks: ['Exportar master data', 'Identificar campos vacíos', 'Contar duplicados', 'Diagnóstico presentado'],
                 },
-                right: {
-                    title: '¿Por qué un simulador?',
-                    items: [
-                        'Practicar sin tocar datos reales de producción',
-                        'Entender cada transacción SAP antes de usarla',
-                        'Probar estrategias de limpieza de datos',
-                        'Entrenar al equipo en un entorno seguro',
-                        'Demostrar resultados antes de implementar',
-                    ]
-                }
-            }
+                {
+                    day: '31-60', label: 'LIMPIEZA', color: '#F59E0B',
+                    tasks: ['Corregir top 500 materiales', 'Asignar EANs Cat. A', 'Completar pesos', 'Naming convention'],
+                },
+                {
+                    day: '61-90', label: 'OPTIMIZACIÓN', color: '#22C55E',
+                    tasks: ['Control semanal automático', 'Reportes de calidad', 'Puntos de reorden', 'Antes vs Después'],
+                },
+            ],
         },
 
-        // ===== SLIDE 3: NAMING =====
+        // ── 9  BEFORE vs AFTER PROJECTION ─────────────
         {
-            id: 'naming',
-            layout: 'comparison',
-            bg: 'from-[#16213e] to-[#1a1a2e]',
-            content: {
-                overtitle: 'ESTÁNDAR #1',
-                title: 'Convención de Nombres (Naming)',
-                subtitle: 'Un material bien descrito se encuentra, se compra y se vende sin confusión',
-                comparisons: [
-                    {
-                        bad: 'nevera gris',
-                        good: 'REFRIGERADOR SAMSUNG RT38 380L INOX',
-                        rule: 'TIPO + MARCA + MODELO + CAPACIDAD + ACABADO'
-                    },
-                    {
-                        bad: 'cable',
-                        good: 'CABLE ELECTRICO THW 12AWG 100M',
-                        rule: 'TIPO + ESPECIFICACIÓN + CALIBRE + LONGITUD'
-                    },
-                    {
-                        bad: 'tubo',
-                        good: 'TUBO PVC 1/2" SCH40 6M PAVCO',
-                        rule: 'MATERIAL + MEDIDA + CLASIFICACIÓN + LARGO + MARCA'
-                    }
-                ],
-                rules: [
-                    'TODO en MAYÚSCULAS',
-                    'Sin acentos ni ñ (SAP)',
-                    'Máximo 40 caracteres',
-                    'Nunca abreviar innecesariamente',
-                    'Incluir unidad de medida',
-                ]
-            }
+            id: 'projection', layout: 'barCompare',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            actionTitle: 'Proyección: de caos a control en 90 días',
+            metrics: [
+                { label: 'Con EAN', today: 100 - Number(pctSinEAN), target: 95, unit: '%' },
+                { label: 'Con Peso', today: 100 - Number(pctSinPeso), target: 90, unit: '%' },
+                { label: 'Con Reorden', today: 100 - Number(pctSinReorden), target: 85, unit: '%' },
+            ],
         },
 
-        // ===== SLIDE 4: CEDULACIÓN =====
+        // ── 10  THE ASK ──────────────────────────────────
         {
-            id: 'cedula',
-            layout: 'steps',
-            bg: 'from-[#0854A0] via-[#0A6ED1] to-[#1873CC]',
-            content: {
-                overtitle: 'PROCESO CLAVE',
-                title: 'Cedulación — 7 pasos para dar identidad a cada material',
-                subtitle: 'Sin cédula completa, un material no puede operar en SAP',
-                steps: [
-                    { num: 1, title: 'Solicitud', who: 'Compras', icon: '📝' },
-                    { num: 2, title: 'Validar Duplicados', who: 'Master Data', icon: '🔍' },
-                    { num: 3, title: 'Crear Material (MM01)', who: 'Master Data', icon: '🏗️' },
-                    { num: 4, title: 'Asignar EAN', who: 'Master Data', icon: '📊' },
-                    { num: 5, title: 'Peso y Empaque', who: 'Ing. Empaque', icon: '📦' },
-                    { num: 6, title: 'Parametrizar MRP', who: 'Compras', icon: '⚙️' },
-                    { num: 7, title: 'Verificación Final', who: 'Coordinador (TÚ)', icon: '✅' },
-                ]
-            }
+            id: 'ask', layout: 'bigText',
+            bg: 'from-[#0854A0] to-[#0A6ED1]',
+            line1: '¿QUÉ NECESITAMOS?',
+            line2: 'Acceso a SAP MM · 3 personas · 90 días',
+            line3: 'Con eso, este plan se ejecuta y el ROI es inmediato',
         },
 
-        // ===== SLIDE 5: TEAM =====
+        // ── 11  DEMO ─────────────────────────────────────
         {
-            id: 'team',
-            layout: 'team',
-            bg: 'from-[#16213e] to-[#0f3460]',
-            content: {
-                overtitle: 'ESTRUCTURA',
-                title: 'Equipo Supply Chain — Daka',
-                members: [
-                    {
-                        role: 'Coordinador Supply Chain',
-                        name: 'TÚ',
-                        color: '#0854A0',
-                        tasks: ['Estrategia y KPIs', 'Decisiones de compra', 'Supervisión del equipo', 'Reportes a gerencia'],
-                        highlight: true
-                    },
-                    {
-                        role: 'Analista de Datos 1',
-                        name: 'Enfoque: Calidad de Datos',
-                        color: '#107E3E',
-                        tasks: ['Limpiar EANs y descripciones', 'Eliminar duplicados', 'Validar precios'],
-                        highlight: false
-                    },
-                    {
-                        role: 'Analista de Datos 2',
-                        name: 'Enfoque: Inventarios',
-                        color: '#E9730C',
-                        tasks: ['Gestionar puntos de reorden', 'Monitorear stock', 'Alertas de quiebre'],
-                        highlight: false
-                    },
-                    {
-                        role: 'Ingeniero de Empaque',
-                        name: 'Enfoque: Logística',
-                        color: '#6F42C1',
-                        tasks: ['Medir y pesar productos', 'Calcular cubicaje', 'Optimizar empaque'],
-                        highlight: false
-                    }
-                ]
-            }
+            id: 'demo', layout: 'demo',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            actionTitle: 'Demo en vivo — haz clic para explorar',
+            buttons: [
+                { label: 'Plan Maestro', tx: '/nPLAN', color: '#0854A0' },
+                { label: 'Data Browser', tx: '/nSE16N', color: '#354A5F' },
+                { label: 'Gestor EAN', tx: '/nEAN', color: '#D97706' },
+                { label: 'Mi Equipo', tx: '/nTEAM', color: '#107E3E' },
+                { label: 'Importar Excel', tx: '/nIMPORT', color: '#6F42C1' },
+            ],
         },
 
-        // ===== SLIDE 6: 30-60-90 PLAN =====
+        // ── 12  CLOSING ──────────────────────────────────
         {
-            id: 'plan',
-            layout: 'timeline',
-            bg: 'from-[#0854A0] to-[#354A5F]',
-            content: {
-                overtitle: 'ROADMAP',
-                title: 'Plan de Acción 30-60-90 Días',
-                phases: [
-                    {
-                        name: 'Días 1-30', label: 'DIAGNÓSTICO', icon: '🔍', color: '#EF4444',
-                        tasks: [
-                            'Exportar master data completa',
-                            'Contar materiales con campos vacíos',
-                            'Identificar duplicados y EANs faltantes',
-                            'Presentar diagnóstico con números reales'
-                        ],
-                        deliverable: 'Informe diagnóstico + Plan priorizado'
-                    },
-                    {
-                        name: 'Días 31-60', label: 'LIMPIEZA', icon: '🧹', color: '#F59E0B',
-                        tasks: [
-                            'Corregir 500 materiales más vendidos',
-                            'Asignar EANs faltantes (Cat. A)',
-                            'Completar pesos y dimensiones',
-                            'Implementar naming convention'
-                        ],
-                        deliverable: '500+ materiales corregidos'
-                    },
-                    {
-                        name: 'Días 61-90', label: 'OPTIMIZACIÓN', icon: '🚀', color: '#22C55E',
-                        tasks: [
-                            'Control semanal automatizado',
-                            'Reportes de calidad de data',
-                            'Optimizar puntos de reorden',
-                            'Presentar antes vs después'
-                        ],
-                        deliverable: 'Proceso sostenible implementado'
-                    }
-                ]
-            }
-        },
-
-        // ===== SLIDE 7: LIVE DATA =====
-        {
-            id: 'live',
-            layout: 'metrics',
-            bg: 'from-[#16213e] to-[#1a1a2e]',
-            content: {
-                overtitle: 'DATOS EN VIVO',
-                title: 'Estado Actual del Simulador',
-                subtitle: `${metrics.total.toLocaleString()} materiales cargados — métricas calculadas en tiempo real`,
-                metrics: [
-                    { label: 'Total Materiales', value: metrics.total.toLocaleString(), color: '#0854A0', pct: 100 },
-                    { label: 'Con EAN', value: (metrics.total - metrics.sinEAN).toLocaleString(), color: '#22C55E', pct: ((metrics.total - metrics.sinEAN) / metrics.total * 100) },
-                    { label: 'Con Peso', value: (metrics.total - metrics.sinPeso).toLocaleString(), color: '#3B82F6', pct: ((metrics.total - metrics.sinPeso) / metrics.total * 100) },
-                    { label: 'Con Reorden', value: (metrics.total - metrics.sinReorden).toLocaleString(), color: '#8B5CF6', pct: ((metrics.total - metrics.sinReorden) / metrics.total * 100) },
-                ],
-                actions: [
-                    { label: 'Ver datos completos', tx: '/nSE16N' },
-                    { label: 'Ver plan detallado', tx: '/nPLAN' },
-                    { label: 'Ver equipo', tx: '/nTEAM' },
-                ]
-            }
-        },
-
-        // ===== SLIDE 8: CLOSING =====
-        {
-            id: 'closing',
-            layout: 'hero',
-            bg: 'from-[#0854A0] via-[#0A6ED1] to-[#107E3E]',
-            content: {
-                overtitle: 'SIGUIENTE PASO',
-                title: '¿Qué necesitamos?',
-                subtitle: 'Con acceso al sistema productivo, este plan se ejecuta en 90 días',
-                caption: '• Acceso a SAP MM y SE16N • Permisos de lectura en MARA, MAKT, MARC, MARD • Apoyo para el equipo de 3 personas',
-                footer: 'Dataelectric — Supply Chain Management — 2026'
-            }
+            id: 'closing', layout: 'bigText',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            line1: 'DATAELECTRIC',
+            line2: 'Datos limpios. Decisiones inteligentes.',
+            line3: 'Gracias.',
         },
     ];
 }
 
+// =============================================
+//  PRESENTATION COMPONENT
+// =============================================
 export default function Presentation({ materials = [], onNavigate, onClose }) {
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const [animating, setAnimating] = useState(false);
+    const [cur, setCur] = useState(0);
+    const [anim, setAnim] = useState(false);
 
     const metrics = useMemo(() => {
-        let sinEAN = 0, sinPeso = 0, sinReorden = 0, sinDesc = 0, total = materials.length;
-        for (const m of materials) {
-            if (!m.ean || m.ean === '') sinEAN++;
-            if (!m.pesoNeto || m.pesoNeto === 0) sinPeso++;
-            if (!m.puntoReorden || m.puntoReorden === 0) sinReorden++;
-            if (!m.descripcion || m.descripcion.trim() === '') sinDesc++;
+        let sinEAN = 0, sinPeso = 0, sinReorden = 0, sinDesc = 0;
+        for (const p of materials) {
+            if (!p.ean || p.ean === '') sinEAN++;
+            if (!p.pesoNeto || p.pesoNeto === 0) sinPeso++;
+            if (!p.puntoReorden || p.puntoReorden === 0) sinReorden++;
+            if (!p.descripcion || p.descripcion.trim() === '') sinDesc++;
         }
-        return { sinEAN, sinPeso, sinReorden, sinDesc, total };
+        return { sinEAN, sinPeso, sinReorden, sinDesc, total: materials.length };
     }, [materials]);
 
     const slides = useMemo(() => buildSlides(metrics), [metrics]);
 
-    const goTo = useCallback((idx) => {
-        if (idx >= 0 && idx < slides.length && !animating) {
-            setAnimating(true);
-            setCurrentSlide(idx);
-            setTimeout(() => setAnimating(false), 400);
+    const go = useCallback((i) => {
+        if (i >= 0 && i < slides.length && !anim) {
+            setAnim(true);
+            setCur(i);
+            setTimeout(() => setAnim(false), 350);
         }
-    }, [slides.length, animating]);
+    }, [slides.length, anim]);
 
-    // Keyboard nav
     useEffect(() => {
-        const handler = (e) => {
-            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(currentSlide + 1); }
-            if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(currentSlide - 1); }
+        const h = (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(cur + 1); }
+            if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur - 1); }
             if (e.key === 'Escape') onClose?.();
         };
-        window.addEventListener('keydown', handler);
-        return () => window.removeEventListener('keydown', handler);
-    }, [currentSlide, goTo, onClose]);
+        window.addEventListener('keydown', h);
+        return () => window.removeEventListener('keydown', h);
+    }, [cur, go, onClose]);
 
-    const slide = slides[currentSlide];
+    const s = slides[cur];
 
-    const handleTxClick = (tx) => {
-        if (tx && onNavigate) {
-            onClose?.();
-            setTimeout(() => onNavigate(tx), 150);
-        }
-    };
+    const goTx = (tx) => { onClose?.(); setTimeout(() => onNavigate?.(tx), 150); };
 
+    // ─── RENDER ─────────────────────────────────────────
     return (
-        <div className="fixed inset-0 z-[60] flex flex-col bg-black">
-            {/* ===== SLIDE CONTENT ===== */}
+        <div className="fixed inset-0 z-[60] flex flex-col bg-[#0f172a]">
+
+            {/* ── SLIDE ─────────────────────────────────── */}
             <div
-                className={`flex-1 flex items-center justify-center bg-gradient-to-br ${slide.bg} transition-all duration-500 overflow-hidden relative`}
-                key={slide.id}
+                key={s.id}
+                className={`flex-1 flex items-center justify-center bg-gradient-to-br ${s.bg} relative overflow-hidden`}
             >
-                {/* Decorative circles */}
-                <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/3" />
+                {/* subtle grid pattern */}
+                <div className="absolute inset-0 opacity-[0.03]"
+                    style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '30px 30px' }}
+                />
 
-                <div className="relative z-10 w-full max-w-6xl mx-auto px-10 py-8 animate-[fadeIn_0.5s_ease-out]">
+                <div className="relative z-10 w-full max-w-6xl mx-auto px-12 py-10 animate-[slideUp_0.45s_ease-out]">
 
-                    {/* ===== HERO LAYOUT ===== */}
-                    {slide.layout === 'hero' && (
+                    {/* ===== LAYOUT: bigText ===== */}
+                    {s.layout === 'bigText' && (
                         <div className="text-center space-y-6">
-                            <p className="text-sm font-bold text-white/50 tracking-[0.3em] uppercase">{slide.content.overtitle}</p>
-                            <h1 className="text-5xl font-black text-white leading-tight">{slide.content.title}</h1>
-                            <p className="text-xl text-white/80 max-w-2xl mx-auto">{slide.content.subtitle}</p>
-                            {slide.content.caption && (
-                                <p className="text-sm text-white/50 max-w-xl mx-auto mt-4 leading-relaxed">{slide.content.caption}</p>
-                            )}
-                            {slide.content.footer && (
-                                <p className="text-xs text-white/30 mt-8 tracking-wider">{slide.content.footer}</p>
-                            )}
+                            <p className="text-sm tracking-[0.4em] text-white/40 uppercase font-light">{s.line1}</p>
+                            <h1 className="text-5xl md:text-6xl font-black text-white leading-[1.1] max-w-4xl mx-auto">{s.line2}</h1>
+                            <p className="text-lg text-white/50 font-light max-w-2xl mx-auto">{s.line3}</p>
                         </div>
                     )}
 
-                    {/* ===== CARDS LAYOUT (Problem) ===== */}
-                    {slide.layout === 'cards' && (
+                    {/* ===== LAYOUT: bigNumber ===== */}
+                    {s.layout === 'bigNumber' && (
+                        <div className="text-center space-y-4">
+                            <div className="text-[120px] md:text-[160px] font-black text-white leading-none tracking-tighter">{s.number}</div>
+                            <p className="text-2xl text-white/70 font-light">{s.label}</p>
+                            {s.sub && <p className="text-base text-white/40 mt-4 max-w-lg mx-auto">{s.sub}</p>}
+                        </div>
+                    )}
+
+                    {/* ===== LAYOUT: statRow ===== */}
+                    {s.layout === 'statRow' && (
+                        <div className="space-y-10">
+                            <h2 className="text-3xl font-black text-white text-center leading-tight">{s.actionTitle}</h2>
+                            <div className="grid grid-cols-3 gap-8 max-w-4xl mx-auto">
+                                {s.stats.map((st, i) => (
+                                    <div key={i} className="text-center">
+                                        <div className="text-7xl font-black leading-none" style={{ color: st.color }}>{st.big}</div>
+                                        <div className="text-lg text-white/80 font-medium mt-3">{st.label}</div>
+                                        <div className="text-sm text-white/40 mt-1">{st.sub}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ===== LAYOUT: contrast (before/after) ===== */}
+                    {s.layout === 'contrast' && (
                         <div className="space-y-8">
-                            <div className="text-center">
-                                <p className="text-sm font-bold text-white/50 tracking-[0.3em] uppercase">{slide.content.overtitle}</p>
-                                <h2 className="text-4xl font-black text-white mt-2">{slide.content.title}</h2>
-                                <p className="text-base text-white/60 mt-2">{slide.content.subtitle}</p>
-                            </div>
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-8">
-                                {slide.content.cards.map((card, i) => (
-                                    <div
-                                        key={i}
-                                        className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/10 hover:bg-white/15 transition-colors text-center"
-                                        style={{ animationDelay: `${i * 100}ms` }}
-                                    >
-                                        <span className="text-3xl">{card.icon}</span>
-                                        <div className="text-4xl font-black mt-3" style={{ color: card.color }}>{card.value}</div>
-                                        <div className="text-sm font-bold text-white mt-1">{card.label}</div>
-                                        <p className="text-xs text-white/50 mt-2 leading-relaxed">{card.desc}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* ===== SPLIT LAYOUT (Solution) ===== */}
-                    {slide.layout === 'split' && (
-                        <div className="space-y-6">
-                            <div className="text-center">
-                                <p className="text-sm font-bold text-white/50 tracking-[0.3em] uppercase">{slide.content.overtitle}</p>
-                                <h2 className="text-4xl font-black text-white mt-2">{slide.content.title}</h2>
-                            </div>
-                            <div className="grid grid-cols-2 gap-8 mt-6">
-                                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10">
-                                    <h3 className="font-bold text-white text-lg mb-4 flex items-center gap-2">
-                                        <Zap size={18} className="text-yellow-400" /> {slide.content.left.title}
-                                    </h3>
-                                    <div className="space-y-3">
-                                        {slide.content.left.items.map((item, i) => (
-                                            <div key={i} className="flex items-start gap-3 text-white/90">
-                                                <span className="text-lg">{item.icon}</span>
-                                                <span className="text-sm">{item.text}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10">
-                                    <h3 className="font-bold text-white text-lg mb-4 flex items-center gap-2">
-                                        <Shield size={18} className="text-green-400" /> {slide.content.right.title}
-                                    </h3>
-                                    <div className="space-y-3">
-                                        {slide.content.right.items.map((item, i) => (
-                                            <div key={i} className="flex items-start gap-3 text-white/80">
-                                                <CheckCircle size={16} className="text-green-400 mt-0.5 flex-shrink-0" />
-                                                <span className="text-sm">{item}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* ===== COMPARISON LAYOUT (Naming) ===== */}
-                    {slide.layout === 'comparison' && (
-                        <div className="space-y-6">
-                            <div className="text-center">
-                                <p className="text-sm font-bold text-white/50 tracking-[0.3em] uppercase">{slide.content.overtitle}</p>
-                                <h2 className="text-4xl font-black text-white mt-2">{slide.content.title}</h2>
-                                <p className="text-base text-white/60 mt-2">{slide.content.subtitle}</p>
-                            </div>
-                            <div className="space-y-4 mt-6">
-                                {slide.content.comparisons.map((c, i) => (
-                                    <div key={i} className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 flex items-center gap-4">
-                                        <div className="flex-1">
-                                            <div className="text-xs text-white/40 uppercase mb-1">Antes (MAL)</div>
-                                            <div className="text-lg font-mono bg-red-500/20 text-red-300 px-3 py-1.5 rounded-lg border border-red-500/30 line-through">
-                                                {c.bad}
-                                            </div>
+                            <h2 className="text-3xl font-black text-white text-center">{s.actionTitle}</h2>
+                            <div className="space-y-4 max-w-4xl mx-auto">
+                                {s.before.map((b, i) => (
+                                    <div key={i} className="grid grid-cols-[1fr_60px_1fr] items-center gap-0">
+                                        <div className="text-right">
+                                            <span className="inline-block bg-red-500/15 text-red-400 font-mono text-lg px-5 py-2.5 rounded-xl border border-red-500/20 line-through">
+                                                {b}
+                                            </span>
                                         </div>
-                                        <ArrowRight size={24} className="text-white/30 flex-shrink-0" />
-                                        <div className="flex-1">
-                                            <div className="text-xs text-white/40 uppercase mb-1">Después (BIEN)</div>
-                                            <div className="text-lg font-mono bg-green-500/20 text-green-300 px-3 py-1.5 rounded-lg border border-green-500/30 font-bold">
-                                                {c.good}
-                                            </div>
-                                        </div>
-                                        <div className="flex-1 text-xs text-white/50 italic pl-4 border-l border-white/10">
-                                            {c.rule}
+                                        <ArrowRight className="text-white/20 mx-auto" size={20} />
+                                        <div>
+                                            <span className="inline-block bg-emerald-500/15 text-emerald-400 font-mono text-lg px-5 py-2.5 rounded-xl border border-emerald-500/20 font-bold">
+                                                {s.after[i]}
+                                            </span>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <div className="flex gap-3 justify-center mt-4 flex-wrap">
-                                {slide.content.rules.map((r, i) => (
-                                    <span key={i} className="text-xs bg-white/10 text-white/70 px-3 py-1.5 rounded-full border border-white/10">
-                                        {r}
-                                    </span>
-                                ))}
-                            </div>
+                            <p className="text-center text-sm text-white/30 mt-4 tracking-wide">{s.rule}</p>
                         </div>
                     )}
 
-                    {/* ===== STEPS LAYOUT (Cedulación) ===== */}
-                    {slide.layout === 'steps' && (
-                        <div className="space-y-6">
-                            <div className="text-center">
-                                <p className="text-sm font-bold text-white/50 tracking-[0.3em] uppercase">{slide.content.overtitle}</p>
-                                <h2 className="text-3xl font-black text-white mt-2">{slide.content.title}</h2>
-                                <p className="text-base text-white/60 mt-2">{slide.content.subtitle}</p>
-                            </div>
-                            <div className="flex items-center justify-center gap-2 mt-8">
-                                {slide.content.steps.map((s, i) => (
+                    {/* ===== LAYOUT: process (cedulación) ===== */}
+                    {s.layout === 'process' && (
+                        <div className="space-y-8">
+                            <h2 className="text-3xl font-black text-white text-center">{s.actionTitle}</h2>
+                            <div className="flex items-center justify-center gap-1 flex-wrap">
+                                {s.steps.map((st, i) => (
                                     <div key={i} className="flex items-center">
-                                        <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 text-center w-36 hover:bg-white/15 transition-colors">
-                                            <span className="text-3xl">{s.icon}</span>
-                                            <div className="text-white font-bold text-xs mt-2">{s.title}</div>
-                                            <div className="text-[10px] text-white/50 mt-1">{s.who}</div>
-                                            <div className="w-6 h-6 rounded-full bg-white/20 text-white text-[10px] font-bold flex items-center justify-center mx-auto mt-2">
-                                                {s.num}
-                                            </div>
+                                        <div className="w-28 text-center">
+                                            <div className="text-3xl mb-1">{st.icon}</div>
+                                            <div className="text-xs font-bold text-white">{st.name}</div>
+                                            <div className="text-[10px] text-white/40 mt-0.5">{st.who}</div>
+                                            <div className="text-[10px] font-mono text-white/20 mt-1">{st.n}</div>
                                         </div>
-                                        {i < slide.content.steps.length - 1 && (
-                                            <ChevronRight size={16} className="text-white/30 mx-1 flex-shrink-0" />
+                                        {i < s.steps.length - 1 && (
+                                            <ChevronRight size={16} className="text-white/15 mx-0.5" />
                                         )}
                                     </div>
                                 ))}
@@ -478,31 +331,57 @@ export default function Presentation({ materials = [], onNavigate, onClose }) {
                         </div>
                     )}
 
-                    {/* ===== TEAM LAYOUT ===== */}
-                    {slide.layout === 'team' && (
-                        <div className="space-y-6">
-                            <div className="text-center">
-                                <p className="text-sm font-bold text-white/50 tracking-[0.3em] uppercase">{slide.content.overtitle}</p>
-                                <h2 className="text-4xl font-black text-white mt-2">{slide.content.title}</h2>
+                    {/* ===== LAYOUT: grid6 (tools) ===== */}
+                    {s.layout === 'grid6' && (
+                        <div className="space-y-8">
+                            <h2 className="text-3xl font-black text-white text-center">{s.actionTitle}</h2>
+                            <div className="grid grid-cols-3 gap-4 max-w-4xl mx-auto">
+                                {s.items.map((it, i) => (
+                                    <div key={i} className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-5 hover:bg-white/[0.08] transition-colors">
+                                        <span className="text-3xl">{it.icon}</span>
+                                        <h3 className="text-white font-bold mt-3 text-sm">{it.title}</h3>
+                                        <p className="text-white/40 text-xs mt-0.5">{it.desc}</p>
+                                        <span className="text-[10px] font-mono text-white/20 mt-2 block">{it.code}</span>
+                                    </div>
+                                ))}
                             </div>
-                            <div className="grid grid-cols-4 gap-4 mt-8">
-                                {slide.content.members.map((m, i) => (
-                                    <div
-                                        key={i}
-                                        className={`rounded-2xl p-5 border text-center ${m.highlight ? 'bg-white/20 border-white/30 ring-2 ring-yellow-400/50' : 'bg-white/10 border-white/10'}`}
-                                    >
-                                        <div
-                                            className="w-14 h-14 rounded-full flex items-center justify-center mx-auto text-xl font-bold text-white shadow-lg"
-                                            style={{ backgroundColor: m.color }}
-                                        >
-                                            {m.highlight ? '👤' : m.role.charAt(0)}
+                        </div>
+                    )}
+
+                    {/* ===== LAYOUT: team4 ===== */}
+                    {s.layout === 'team4' && (
+                        <div className="space-y-8">
+                            <h2 className="text-3xl font-black text-white text-center">{s.actionTitle}</h2>
+                            <div className="grid grid-cols-4 gap-4 max-w-4xl mx-auto">
+                                {s.members.map((mb, i) => (
+                                    <div key={i} className={`rounded-2xl p-5 text-center border ${mb.you ? 'bg-white/10 border-yellow-500/30 ring-1 ring-yellow-500/20' : 'bg-white/[0.04] border-white/[0.08]'}`}>
+                                        <span className="text-4xl">{mb.emoji}</span>
+                                        <h3 className="text-white font-bold text-sm mt-3">{mb.role}</h3>
+                                        <p className="text-white/40 text-xs mt-1">{mb.focus}</p>
+                                        {mb.you && <span className="inline-block mt-2 text-[10px] bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full font-bold">TÚ</span>}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ===== LAYOUT: timeline3 (30-60-90) ===== */}
+                    {s.layout === 'timeline3' && (
+                        <div className="space-y-8">
+                            <h2 className="text-3xl font-black text-white text-center">{s.actionTitle}</h2>
+                            <div className="grid grid-cols-3 gap-5 max-w-5xl mx-auto">
+                                {s.phases.map((ph, i) => (
+                                    <div key={i} className="bg-white/[0.04] border border-white/[0.08] rounded-2xl overflow-hidden">
+                                        <div className="p-4 text-center" style={{ backgroundColor: `${ph.color}15` }}>
+                                            <div className="text-3xl font-black text-white">Día {ph.day}</div>
+                                            <span className="inline-block text-[10px] font-bold px-3 py-0.5 rounded-full mt-1" style={{ backgroundColor: ph.color, color: 'white' }}>
+                                                {ph.label}
+                                            </span>
                                         </div>
-                                        <h3 className="font-bold text-white text-sm mt-3">{m.role}</h3>
-                                        <p className="text-xs text-white/50 mt-0.5">{m.name}</p>
-                                        <div className="mt-3 space-y-1.5">
-                                            {m.tasks.map((t, j) => (
-                                                <div key={j} className="text-[11px] text-white/70 flex items-start gap-1.5">
-                                                    <CheckCircle size={10} className="text-green-400 mt-0.5 flex-shrink-0" />
+                                        <div className="p-4 space-y-2">
+                                            {ph.tasks.map((t, j) => (
+                                                <div key={j} className="text-xs text-white/60 flex items-start gap-2">
+                                                    <CheckCircle size={12} className="mt-0.5 flex-shrink-0" style={{ color: ph.color }} />
                                                     {t}
                                                 </div>
                                             ))}
@@ -513,36 +392,31 @@ export default function Presentation({ materials = [], onNavigate, onClose }) {
                         </div>
                     )}
 
-                    {/* ===== TIMELINE LAYOUT (30-60-90) ===== */}
-                    {slide.layout === 'timeline' && (
-                        <div className="space-y-6">
-                            <div className="text-center">
-                                <p className="text-sm font-bold text-white/50 tracking-[0.3em] uppercase">{slide.content.overtitle}</p>
-                                <h2 className="text-4xl font-black text-white mt-2">{slide.content.title}</h2>
-                            </div>
-                            <div className="grid grid-cols-3 gap-5 mt-8">
-                                {slide.content.phases.map((p, i) => (
-                                    <div key={i} className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden">
-                                        <div className="p-4 text-center" style={{ backgroundColor: p.color + '30' }}>
-                                            <span className="text-3xl">{p.icon}</span>
-                                            <h3 className="font-black text-white text-lg mt-1">{p.name}</h3>
-                                            <span
-                                                className="inline-block text-[10px] font-bold px-3 py-0.5 rounded-full mt-1"
-                                                style={{ backgroundColor: p.color, color: 'white' }}
-                                            >
-                                                {p.label}
-                                            </span>
+                    {/* ===== LAYOUT: barCompare (projection) ===== */}
+                    {s.layout === 'barCompare' && (
+                        <div className="space-y-8">
+                            <h2 className="text-3xl font-black text-white text-center">{s.actionTitle}</h2>
+                            <div className="max-w-3xl mx-auto space-y-6">
+                                {s.metrics.map((mt, i) => (
+                                    <div key={i} className="space-y-2">
+                                        <div className="flex justify-between text-sm text-white/60">
+                                            <span>{mt.label}</span>
+                                            <span>{mt.today}{mt.unit} → <strong className="text-emerald-400">{mt.target}{mt.unit}</strong></span>
                                         </div>
-                                        <div className="p-4 space-y-2">
-                                            {p.tasks.map((t, j) => (
-                                                <div key={j} className="text-xs text-white/80 flex items-start gap-2">
-                                                    <ChevronRight size={12} className="mt-0.5 flex-shrink-0" style={{ color: p.color }} />
-                                                    {t}
-                                                </div>
-                                            ))}
-                                            <div className="mt-3 pt-3 border-t border-white/10">
-                                                <div className="text-[10px] text-white/40 uppercase">Entregable:</div>
-                                                <div className="text-xs text-white/70 font-medium mt-0.5">{p.deliverable}</div>
+                                        <div className="relative h-8 bg-white/[0.06] rounded-full overflow-hidden">
+                                            {/* Today bar */}
+                                            <div
+                                                className="absolute left-0 top-0 h-full rounded-full bg-white/20 transition-all duration-1000"
+                                                style={{ width: `${mt.today}%` }}
+                                            />
+                                            {/* Target bar */}
+                                            <div
+                                                className="absolute left-0 top-0 h-full rounded-full transition-all duration-1000"
+                                                style={{ width: `${mt.target}%`, background: `linear-gradient(90deg, #22C55E80, #22C55E)` }}
+                                            />
+                                            <div className="absolute inset-0 flex items-center justify-between px-4">
+                                                <span className="text-xs text-white/50 font-medium">Hoy: {mt.today}%</span>
+                                                <span className="text-xs text-emerald-300 font-bold">Meta: {mt.target}%</span>
                                             </div>
                                         </div>
                                     </div>
@@ -551,97 +425,71 @@ export default function Presentation({ materials = [], onNavigate, onClose }) {
                         </div>
                     )}
 
-                    {/* ===== METRICS LAYOUT (Live Data) ===== */}
-                    {slide.layout === 'metrics' && (
-                        <div className="space-y-6">
-                            <div className="text-center">
-                                <p className="text-sm font-bold text-white/50 tracking-[0.3em] uppercase">{slide.content.overtitle}</p>
-                                <h2 className="text-4xl font-black text-white mt-2">{slide.content.title}</h2>
-                                <p className="text-base text-white/60 mt-2">{slide.content.subtitle}</p>
-                            </div>
-                            <div className="grid grid-cols-4 gap-5 mt-8">
-                                {slide.content.metrics.map((m, i) => (
-                                    <div key={i} className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/10 text-center">
-                                        <div className="text-4xl font-black" style={{ color: m.color }}>{m.value}</div>
-                                        <div className="text-sm text-white/80 font-medium mt-1">{m.label}</div>
-                                        <div className="mt-3 h-2 bg-white/10 rounded-full overflow-hidden">
-                                            <div
-                                                className="h-full rounded-full transition-all duration-1000"
-                                                style={{ width: `${m.pct.toFixed(0)}%`, backgroundColor: m.color }}
-                                            />
-                                        </div>
-                                        <div className="text-[10px] text-white/40 mt-1">{m.pct.toFixed(1)}%</div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="flex justify-center gap-3 mt-6">
-                                {slide.content.actions.map((a, i) => (
+                    {/* ===== LAYOUT: demo ===== */}
+                    {s.layout === 'demo' && (
+                        <div className="space-y-8">
+                            <h2 className="text-3xl font-black text-white text-center">{s.actionTitle}</h2>
+                            <div className="flex flex-wrap justify-center gap-4 max-w-3xl mx-auto">
+                                {s.buttons.map((btn, i) => (
                                     <button
                                         key={i}
-                                        onClick={() => handleTxClick(a.tx)}
-                                        className="text-xs bg-white/15 hover:bg-white/25 text-white px-4 py-2 rounded-lg border border-white/20 transition-colors flex items-center gap-2 cursor-pointer"
+                                        onClick={() => goTx(btn.tx)}
+                                        className="group relative px-8 py-5 rounded-2xl text-white border border-white/10 hover:border-white/30 hover:scale-105 transition-all cursor-pointer bg-white/[0.04] hover:bg-white/[0.08]"
                                     >
-                                        <Play size={12} /> {a.label}
+                                        <div className="text-base font-bold">{btn.label}</div>
+                                        <div className="text-xs text-white/30 font-mono mt-1">{btn.tx}</div>
+                                        <Play size={14} className="absolute top-3 right-3 text-white/20 group-hover:text-white/50 transition-colors" />
                                     </button>
                                 ))}
                             </div>
+                            <p className="text-center text-xs text-white/30">Haz clic en cualquiera para abrir la transacción en vivo</p>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* ===== BOTTOM CONTROLS ===== */}
-            <div className="bg-black/80 backdrop-blur-md px-6 py-3 flex items-center justify-between border-t border-white/10">
-                {/* Slide counter */}
-                <div className="text-sm text-white/50 font-mono w-32">
-                    {currentSlide + 1} / {slides.length}
-                </div>
+            {/* ── BOTTOM BAR ────────────────────────────── */}
+            <div className="bg-black/60 backdrop-blur-xl px-8 py-3 flex items-center justify-between border-t border-white/[0.06]">
+                {/* Counter */}
+                <span className="text-xs font-mono text-white/30 w-24">
+                    {String(cur + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+                </span>
 
-                {/* Dot indicators */}
-                <div className="flex items-center gap-2">
-                    {slides.map((s, i) => (
+                {/* Dots */}
+                <div className="flex items-center gap-1.5">
+                    {slides.map((_, i) => (
                         <button
                             key={i}
-                            onClick={() => goTo(i)}
-                            className={`transition-all duration-300 rounded-full cursor-pointer ${i === currentSlide
-                                ? 'w-8 h-2 bg-white'
-                                : 'w-2 h-2 bg-white/30 hover:bg-white/50'
+                            onClick={() => go(i)}
+                            className={`rounded-full transition-all duration-300 cursor-pointer ${i === cur ? 'w-7 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/20 hover:bg-white/40'
                                 }`}
-                            title={s.id}
                         />
                     ))}
                 </div>
 
-                {/* Nav buttons */}
-                <div className="flex items-center gap-2 w-32 justify-end">
-                    <button
-                        onClick={() => goTo(currentSlide - 1)}
-                        disabled={currentSlide === 0}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                    >
-                        <ChevronLeft size={18} />
+                {/* Controls */}
+                <div className="flex items-center gap-2 w-24 justify-end">
+                    <button onClick={() => go(cur - 1)} disabled={cur === 0}
+                        className="w-7 h-7 flex items-center justify-center rounded bg-white/[0.08] hover:bg-white/[0.15] text-white disabled:opacity-20 transition-colors cursor-pointer">
+                        <ChevronLeft size={16} />
                     </button>
-                    <button
-                        onClick={() => goTo(currentSlide + 1)}
-                        disabled={currentSlide === slides.length - 1}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                    >
-                        <ChevronRight size={18} />
+                    <button onClick={() => go(cur + 1)} disabled={cur === slides.length - 1}
+                        className="w-7 h-7 flex items-center justify-center rounded bg-white/[0.08] hover:bg-white/[0.15] text-white disabled:opacity-20 transition-colors cursor-pointer">
+                        <ChevronRight size={16} />
                     </button>
-                    <button
-                        onClick={onClose}
-                        className="ml-2 text-xs text-white/50 hover:text-white/80 transition-colors cursor-pointer"
-                    >
-                        ESC
-                    </button>
+                    <button onClick={onClose} className="ml-1 text-[10px] text-white/30 hover:text-white/60 transition-colors cursor-pointer">ESC</button>
                 </div>
             </div>
 
-            {/* Keyframe animation */}
+            {/* ── PROGRESS BAR ──────────────────────────── */}
+            <div className="h-0.5 bg-white/[0.04]">
+                <div className="h-full bg-white/30 transition-all duration-500" style={{ width: `${((cur + 1) / slides.length) * 100}%` }} />
+            </div>
+
             <style>{`
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
+                @keyframes slideUp {
+                    from { opacity: 0; transform: translateY(30px); }
+                    to   { opacity: 1; transform: translateY(0); }
                 }
             `}</style>
         </div>
