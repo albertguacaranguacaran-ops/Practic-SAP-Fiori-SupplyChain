@@ -3,8 +3,49 @@ import {
     Package, ShoppingCart, Truck, FileText, BarChart2,
     Warehouse, DollarSign, Users, Settings, Database,
     Box, AlertTriangle, TrendingDown, Scale, Search,
-    Grid, Home, Star, Clock, ChevronRight, Briefcase
+    Grid, Home, Star, Clock, ChevronRight, Briefcase,
+    ClipboardList, Tag, Layers, BookOpen, Presentation
 } from 'lucide-react';
+
+// ========== MY CUSTOM DAKA PANEL ==========
+const MI_PANEL = [
+    {
+        id: 'plan', code: '/nPLAN',
+        title: 'Plan Maestro',
+        desc: 'Naming, Cedulación y Plan 30-60-90',
+        icon: '📋', color: '#0854A0', gradient: 'from-[#0854A0] to-[#0A6ED1]'
+    },
+    {
+        id: 'team', code: '/nTEAM',
+        title: 'Mi Equipo SCM',
+        desc: 'Roles, tareas y KPIs del equipo',
+        icon: '👥', color: '#107E3E', gradient: 'from-[#107E3E] to-[#13A452]'
+    },
+    {
+        id: 'se16n', code: '/nSE16N',
+        title: 'Data Browser +',
+        desc: 'JOINs diagnósticos + Tutorial',
+        icon: '🔗', color: '#354A5F', gradient: 'from-[#354A5F] to-[#4A6580]'
+    },
+    {
+        id: 'gerente', code: '/nGERENTE',
+        title: 'Gerencia SCM',
+        desc: 'Dashboard, KPIs y Roadmap',
+        icon: '🎯', color: '#6F42C1', gradient: 'from-[#6F42C1] to-[#8B5CF6]'
+    },
+    {
+        id: 'ean_mgr', code: '/nEAN',
+        title: 'Gestor EAN',
+        desc: 'Códigos de barra múltiples',
+        icon: '📊', color: '#D97706', gradient: 'from-[#D97706] to-[#F59E0B]'
+    },
+    {
+        id: 'ecomm_panel', code: '/nECOMM',
+        title: 'E-commerce Strategy',
+        desc: 'Tablero estratégico 36k SKU',
+        icon: '🚀', color: '#DC2626', gradient: 'from-[#DC2626] to-[#EF4444]'
+    },
+];
 
 // SAP Fiori Tile Groups - Organized like real SAP Fiori Launchpad
 const TILE_GROUPS = [
@@ -169,6 +210,24 @@ const TILE_GROUPS = [
                 color: '#107E3E',
                 count: null
             },
+            {
+                id: 'team_tile',
+                code: '/nTEAM',
+                title: 'Mi Equipo',
+                subtitle: 'Operaciones del equipo',
+                icon: Users,
+                color: '#0854A0',
+                count: null
+            },
+            {
+                id: 'plan_tile',
+                code: '/nPLAN',
+                title: 'Plan Maestro',
+                subtitle: 'Naming + 30-60-90',
+                icon: ClipboardList,
+                color: '#E9730C',
+                count: null
+            },
         ]
     },
     {
@@ -183,6 +242,33 @@ const TILE_GROUPS = [
                 subtitle: 'Consultar tablas SQL',
                 icon: Database,
                 color: '#354A5F',
+                count: null
+            },
+            {
+                id: 'se16n',
+                code: '/nSE16N',
+                title: 'Data Browser +',
+                subtitle: 'JOINs + Tutorial',
+                icon: Layers,
+                color: '#0854A0',
+                count: null
+            },
+            {
+                id: 'sqvi',
+                code: '/nSQVI',
+                title: 'QuickViewer',
+                subtitle: 'Reportes rápidos',
+                icon: BookOpen,
+                color: '#107E3E',
+                count: null
+            },
+            {
+                id: 'ean_tile',
+                code: '/nEAN',
+                title: 'Gestor EAN',
+                subtitle: 'Códigos de barra',
+                icon: Tag,
+                color: '#D97706',
                 count: null
             },
             {
@@ -268,6 +354,38 @@ export default function FioriLaunchpad({ onExecuteTransaction, onClose, stats = 
 
             {/* Content */}
             <div className="overflow-auto h-[calc(100vh-80px)] p-6">
+                {/* ===== MI PANEL DAKA — HERO SECTION ===== */}
+                {!searchTerm && (
+                    <div className="mb-10">
+                        <div className="flex items-center gap-3 mb-5">
+                            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
+                                <span className="text-lg">⚡</span>
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-bold text-white">Mi Panel — Coordinador Supply Chain</h2>
+                                <p className="text-xs text-white/50">Transacciones personalizadas para tu rol en Daka</p>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                            {MI_PANEL.map(item => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => { onExecuteTransaction(item.code); onClose(); }}
+                                    className={`relative bg-gradient-to-br ${item.gradient} rounded-xl p-4 text-left text-white hover:scale-[1.03] hover:shadow-xl transition-all duration-200 cursor-pointer group overflow-hidden`}
+                                    style={{ minHeight: '120px' }}
+                                >
+                                    <div className="absolute top-2 right-2 text-2xl opacity-80 group-hover:scale-110 transition-transform">{item.icon}</div>
+                                    <div className="mt-6">
+                                        <h3 className="font-bold text-sm leading-tight">{item.title}</h3>
+                                        <p className="text-[10px] text-white/70 mt-0.5 leading-snug">{item.desc}</p>
+                                    </div>
+                                    <span className="absolute bottom-2 left-4 text-[10px] font-mono text-white/40">{item.code}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* Favorites Section */}
                 {favoriteTiles.length > 0 && !searchTerm && (
                     <div className="mb-8">
