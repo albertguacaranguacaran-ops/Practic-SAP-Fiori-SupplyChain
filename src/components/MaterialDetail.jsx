@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import {
     Save, X, Edit, Eye, Package, Scale, Ruler,
-    AlertTriangle, CheckCircle, Box, Truck, ShoppingCart,
-    BarChart2, Warehouse, DollarSign, Settings, HelpCircle
+    TriangleAlert, CircleCheck, Box, Truck, ShoppingCart,
+    BarChart2, Warehouse, DollarSign, Settings, CircleHelp
 } from 'lucide-react';
 import { calculateVolume, calculateStackingFactor, validateWeight } from '../utils/packagingCalc';
 
@@ -252,7 +252,7 @@ export default function MaterialDetail({
                             onClick={() => setShowViewSelector(false)}
                             className="sap-btn sap-btn-primary"
                         >
-                            <CheckCircle size={14} />
+                            <CircleCheck size={14} />
                             Continuar
                         </button>
                         <button onClick={onClose} className="sap-btn sap-btn-secondary">
@@ -291,7 +291,7 @@ export default function MaterialDetail({
                             className="hover:bg-[#4A6178] p-1 rounded"
                             title="Ayuda (F1)"
                         >
-                            <HelpCircle size={16} />
+                            <CircleHelp size={16} />
                         </button>
                         <button onClick={onClose} className="hover:bg-[#4A6178] p-1 rounded">
                             <X size={18} />
@@ -487,7 +487,7 @@ export default function MaterialDetail({
                                 {weightCheck && weightCheck.nivel !== 'ok' && (
                                     <div className={`mt-2 p-2 rounded text-sm ${weightCheck.nivel === 'warning' ? 'bg-[#FFEBEE] text-[#BB0000]' : 'bg-[#FFF8E1] text-[#E9730C]'
                                         }`}>
-                                        <AlertTriangle size={14} className="inline mr-2" />
+                                        <TriangleAlert size={14} className="inline mr-2" />
                                         {weightCheck.message}
                                     </div>
                                 )}
@@ -703,7 +703,7 @@ export default function MaterialDetail({
                             {formData.stockActual < formData.minbe && (
                                 <div className="bg-[#FFEBEE] border border-[#BB0000] p-4 rounded">
                                     <div className="flex items-center gap-2 text-[#BB0000]">
-                                        <AlertTriangle size={18} />
+                                        <TriangleAlert size={18} />
                                         <span className="font-semibold">¡Alerta de Punto de Pedido!</span>
                                     </div>
                                     <p className="text-sm mt-1">

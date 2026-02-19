@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
-    ArrowLeft, AlertTriangle, CheckCircle,
+    ArrowLeft, TriangleAlert, CircleCheck,
     ShoppingCart, Truck, Calendar, Activity,
     TrendingDown, TrendingUp, Package, Search
 } from 'lucide-react';
@@ -72,14 +72,14 @@ export default function MD04({ onClose, onNavigate }) {
 
                 {/* Status Indicator (The Traffic Light) */}
                 <div className={`px-6 py-2 rounded-lg border-2 flex items-center gap-4 ${statusColor === 'red' ? 'bg-red-50 border-red-200' :
-                        statusColor === 'yellow' ? 'bg-yellow-50 border-yellow-200' :
-                            'bg-green-50 border-green-200'
+                    statusColor === 'yellow' ? 'bg-yellow-50 border-yellow-200' :
+                        'bg-green-50 border-green-200'
                     }`}>
                     <div className="flex flex-col items-end">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Estado Disponibilidad</span>
                         <span className={`font-black text-xl ${statusColor === 'red' ? 'text-red-600' :
-                                statusColor === 'yellow' ? 'text-yellow-600' :
-                                    'text-green-600'
+                            statusColor === 'yellow' ? 'text-yellow-600' :
+                                'text-green-600'
                             }`}>
                             {statusColor === 'red' ? 'AGOTADO' :
                                 statusColor === 'yellow' ? 'REORDEN' :
@@ -87,12 +87,12 @@ export default function MD04({ onClose, onNavigate }) {
                         </span>
                     </div>
                     <div className={`w-12 h-12 rounded-full shadow-inner flex items-center justify-center ${statusColor === 'red' ? 'bg-red-500' :
-                            statusColor === 'yellow' ? 'bg-yellow-400' :
-                                'bg-green-500'
+                        statusColor === 'yellow' ? 'bg-yellow-400' :
+                            'bg-green-500'
                         }`}>
-                        {statusColor === 'red' && <AlertTriangle className="text-white" size={24} />}
+                        {statusColor === 'red' && <TriangleAlert className="text-white" size={24} />}
                         {statusColor === 'yellow' && <Activity className="text-white" size={24} />}
-                        {statusColor === 'green' && <CheckCircle className="text-white" size={24} />}
+                        {statusColor === 'green' && <CircleCheck className="text-white" size={24} />}
                     </div>
                 </div>
             </div>
@@ -141,7 +141,7 @@ export default function MD04({ onClose, onNavigate }) {
                     {statusColor !== 'green' && (
                         <div className="p-6 bg-red-50 border-t border-red-100 flex items-center justify-between">
                             <div className="flex items-start gap-3">
-                                <AlertTriangle className="text-red-500 mt-1" />
+                                <TriangleAlert className="text-red-500 mt-1" />
                                 <div>
                                     <h3 className="font-bold text-red-800">Se detectó Rotura de Stock</h3>
                                     <p className="text-sm text-red-600" >El stock proyectado es negativo. Las ventas no podrán ser entregadas.</p>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
     Package, ShoppingCart, Truck, FileText, BarChart2,
     Warehouse, DollarSign, Users, Settings, Database,
-    Box, AlertTriangle, TrendingDown, Scale, Search,
+    Box, TriangleAlert, TrendingDown, Scale, Search,
     Grid, Home, Star, Clock, ChevronRight, Briefcase,
     ClipboardList, Tag, Layers, BookOpen, Presentation
 } from 'lucide-react';

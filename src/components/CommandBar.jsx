@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import {
-    Terminal, Play, Clock, Search, HelpCircle,
+    Terminal, Play, Clock, Search, CircleHelp,
     ChevronDown, Star, History
 } from 'lucide-react';
 
@@ -266,7 +266,7 @@ export default function CommandBar({ onExecute, currentTransaction }) {
                     className="sap-btn sap-btn-ghost"
                     title="Ayuda de transacciones"
                 >
-                    <HelpCircle size={14} />
+                    <CircleHelp size={14} />
                 </button>
             </div>
 
@@ -288,7 +288,7 @@ export default function CommandBar({ onExecute, currentTransaction }) {
                     <div className="bg-white rounded-lg shadow-xl w-[700px] max-h-[80vh] overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="modal-header">
                             <span className="flex items-center gap-2">
-                                <HelpCircle size={18} />
+                                <CircleHelp size={18} />
                                 Guía de Transacciones SAP - Dataelectric Training
                             </span>
                             <button onClick={() => setShowHelp(false)} className="text-[#6A6D70] hover:text-[#32363A]">✕</button>

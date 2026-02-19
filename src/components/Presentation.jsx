@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
-    ChevronLeft, ChevronRight, CheckCircle, AlertTriangle,
+    ChevronLeft, ChevronRight, CircleCheck, TriangleAlert,
     ArrowRight, Zap, Play, X
 } from 'lucide-react';
 
@@ -480,7 +480,7 @@ export default function Presentation({ materials = [], onNavigate, onClose }) {
                                         <div className="p-4 space-y-2">
                                             {ph.tasks.map((t, j) => (
                                                 <div key={j} className="text-xs text-white/60 flex items-start gap-2">
-                                                    <CheckCircle size={12} className="mt-0.5 flex-shrink-0" style={{ color: ph.color }} />
+                                                    <CircleCheck size={12} className="mt-0.5 flex-shrink-0" style={{ color: ph.color }} />
                                                     {t}
                                                 </div>
                                             ))}

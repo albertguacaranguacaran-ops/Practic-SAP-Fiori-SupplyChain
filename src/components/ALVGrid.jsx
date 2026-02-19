@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import {
     ChevronUp, ChevronDown, Filter, Download, RefreshCw,
-    CheckSquare, Square, AlertTriangle, AlertCircle,
+    CheckSquare, Square, TriangleAlert, CircleAlert,
     Package, Copy, TrendingDown, Ban
 } from 'lucide-react';
 
@@ -157,7 +157,7 @@ export default function ALVGrid({
                 if (hasAlert) {
                     return (
                         <div className="flex items-center justify-center" title={item.alertas?.join('\n') || item.status}>
-                            <AlertTriangle size={14} className={
+                            <TriangleAlert size={14} className={
                                 item.status === 'duplicate' ? 'text-[#856404]' :
                                     item.status === 'low_stock' ? 'text-[#BB0000]' :
                                         'text-[#E9730C]'
@@ -184,7 +184,7 @@ export default function ALVGrid({
                 return (
                     <span className={isOverweight ? 'text-[#BB0000] font-semibold' : ''}>
                         {value?.toFixed(2)} {column.unit}
-                        {isOverweight && <AlertTriangle size={12} className="inline ml-1" />}
+                        {isOverweight && <TriangleAlert size={12} className="inline ml-1" />}
                     </span>
                 );
 

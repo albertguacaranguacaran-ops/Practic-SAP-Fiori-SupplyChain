@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
-    Users, Calendar, Activity, CheckCircle, AlertTriangle,
+    Users, Calendar, Activity, CircleCheck, TriangleAlert,
     ArrowRight, ShoppingCart, Database, Image, BarChart3,
     Clock, Target, ListChecks, ArrowDown, Search, Truck, Zap,
     FileText, X, Briefcase, UserCheck, ShieldCheck, Megaphone
@@ -63,8 +63,8 @@ export default function EcommerceMonitor({ onClose }) {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id
-                                ? 'border-[#1a237e] text-[#1a237e]'
-                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                            ? 'border-[#1a237e] text-[#1a237e]'
+                            : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
                     >
                         <tab.icon size={18} />
@@ -438,7 +438,7 @@ export default function EcommerceMonitor({ onClose }) {
                             {/* RED */}
                             <div className="bg-white rounded-xl shadow-lg border-t-8 border-red-500 overflow-hidden">
                                 <div className="bg-red-50 p-6 flex flex-col items-center">
-                                    <AlertTriangle size={48} className="text-red-500 mb-2" />
+                                    <TriangleAlert size={48} className="text-red-500 mb-2" />
                                     <h3 className="font-black text-red-700 text-xl uppercase">Rechazado</h3>
                                 </div>
                                 <div className="p-6 space-y-4">
@@ -476,7 +476,7 @@ export default function EcommerceMonitor({ onClose }) {
                             {/* GREEN */}
                             <div className="bg-white rounded-xl shadow-lg border-t-8 border-green-500 overflow-hidden transform md:-translate-y-4 md:scale-105 transition-transform">
                                 <div className="bg-green-50 p-6 flex flex-col items-center">
-                                    <CheckCircle size={48} className="text-green-500 mb-2" />
+                                    <CircleCheck size={48} className="text-green-500 mb-2" />
                                     <h3 className="font-black text-green-700 text-xl uppercase">Aprobado</h3>
                                 </div>
                                 <div className="p-6 space-y-4">

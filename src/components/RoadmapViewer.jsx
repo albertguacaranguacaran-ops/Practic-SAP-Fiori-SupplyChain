@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-    Trophy, CheckCircle, Circle, ArrowRight,
-    TrendingUp, BookOpen, AlertTriangle
+    Trophy, CircleCheck, Circle, ArrowRight,
+    TrendingUp, BookOpen, TriangleAlert
 } from 'lucide-react';
 
 const ROADMAP_DATA = [
@@ -190,7 +190,7 @@ export default function RoadmapViewer({ onClose }) {
                             <p className="text-xs text-white/70">Plan de Carrera: Consultor Supply Chain Senior</p>
                             <div className="flex gap-3 mt-1">
                                 <span className="flex items-center gap-1 text-[10px] bg-green-500/20 px-2 py-0.5 rounded border border-green-500/30">
-                                    <CheckCircle size={10} className="text-green-400" /> Funcional / Aprendido
+                                    <CircleCheck size={10} className="text-green-400" /> Funcional / Aprendido
                                 </span>
                                 <span className="flex items-center gap-1 text-[10px] bg-white/10 px-2 py-0.5 rounded border border-white/20">
                                     <Circle size={10} className="text-slate-300" /> Pendiente por Estudiar
@@ -251,7 +251,7 @@ export default function RoadmapViewer({ onClose }) {
                                     >
                                         <div className="mt-0.5">
                                             {item.status === 'ready' ? (
-                                                <CheckCircle size={16} className="text-green-600" />
+                                                <CircleCheck size={16} className="text-green-600" />
                                             ) : (
                                                 <Circle size={16} className="text-slate-400" />
                                             )}

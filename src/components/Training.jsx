@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import {
-    Play, CheckCircle, ChevronRight, BookOpen, Target,
-    Trophy, AlertTriangle, ArrowRight, RefreshCw, X, HelpCircle,
+    Play, CircleCheck, ChevronRight, BookOpen, Target,
+    Trophy, TriangleAlert, ArrowRight, RefreshCw, X, CircleHelp,
     Package, ShoppingCart, Truck
 } from 'lucide-react';
 
@@ -219,7 +219,7 @@ export default function Training({ onNavigate, onClose, activeScenario, onStartS
             <div className="flex-1 overflow-auto p-8">
                 <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {SCENARIOS.map((sc) => {
-                        const Icon = sc.icon || HelpCircle;
+                        const Icon = sc.icon || CircleHelp;
                         const isDone = completed[sc.id];
 
                         return (
@@ -233,7 +233,7 @@ export default function Training({ onNavigate, onClose, activeScenario, onStartS
                                 <div className="p-6 flex-1 flex flex-col">
                                     <div className="flex justify-between items-start mb-4">
                                         <div className={`p-3 rounded-xl transition-colors ${isDone ? 'bg-green-100 text-green-600' : 'bg-gray-50 text-gray-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
-                                            {isDone ? <CheckCircle size={24} /> : <Icon size={24} />}
+                                            {isDone ? <CircleCheck size={24} /> : <Icon size={24} />}
                                         </div>
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${sc.difficulty === 'Fácil' ? 'bg-green-50 text-green-600 border-green-100' :
                                             sc.difficulty === 'Medio' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' :

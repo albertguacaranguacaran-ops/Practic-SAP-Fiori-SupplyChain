@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import {
-    Search, Barcode, Trash2, Star, Plus, X, AlertTriangle,
-    CheckCircle, Info, ArrowRightLeft, HelpCircle, ChevronRight
+    Search, Barcode, Trash2, Star, Plus, X, TriangleAlert,
+    CircleCheck, Info, ArrowRightLeft, CircleHelp, ChevronRight
 } from 'lucide-react';
 
 // Tutorial steps for guided learning
@@ -156,7 +156,7 @@ export default function EANManager({ materials = [], onUpdateMaterial, onClose, 
                         className="p-1.5 hover:bg-white/20 rounded transition-colors"
                         title="Tutorial"
                     >
-                        <HelpCircle size={16} />
+                        <CircleHelp size={16} />
                     </button>
                     <button onClick={onClose} className="hover:bg-white/20 p-1 rounded">✕</button>
                 </div>
@@ -202,7 +202,7 @@ export default function EANManager({ materials = [], onUpdateMaterial, onClose, 
                 </div>
 
                 <div className="flex items-center gap-2 text-xs text-[#6A6D70]">
-                    <AlertTriangle size={14} className="text-[#E9730C]" />
+                    <TriangleAlert size={14} className="text-[#E9730C]" />
                     <span>{materialsWithMultiEAN.length} material(es) con múltiples EAN</span>
                 </div>
             </div>
@@ -216,7 +216,7 @@ export default function EANManager({ materials = [], onUpdateMaterial, onClose, 
                         <div className="bg-white border border-[#C4C4C4] rounded shadow-sm">
                             <div className="bg-[#E8F4FD] px-3 py-2 border-b border-[#C4C4C4] flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <HelpCircle size={14} className="text-[#0854A0]" />
+                                    <CircleHelp size={14} className="text-[#0854A0]" />
                                     <span className="text-xs font-bold text-[#0854A0] uppercase">Tutorial: Limpieza EAN</span>
                                 </div>
                                 <button onClick={() => setShowTutorial(false)} className="text-[#6A6D70] hover:text-[#32363A]">
@@ -251,7 +251,7 @@ export default function EANManager({ materials = [], onUpdateMaterial, onClose, 
                     {/* Quick List: Materials with multi-EAN */}
                     <div className="bg-white border border-[#C4C4C4] rounded shadow-sm">
                         <div className="bg-[#FFF3CD] px-3 py-2 border-b border-[#C4C4C4] flex items-center gap-2">
-                            <AlertTriangle size={14} className="text-[#856404]" />
+                            <TriangleAlert size={14} className="text-[#856404]" />
                             <span className="text-xs font-bold text-[#856404] uppercase">
                                 Materiales con Múltiples EAN ({materialsWithMultiEAN.length})
                             </span>
@@ -372,7 +372,7 @@ export default function EANManager({ materials = [], onUpdateMaterial, onClose, 
                             <div className="bg-white border border-[#C4C4C4] rounded shadow-sm">
                                 <div className="bg-[#FFF3CD] px-4 py-2 border-b border-[#C4C4C4] flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <AlertTriangle size={14} className="text-[#856404]" />
+                                        <TriangleAlert size={14} className="text-[#856404]" />
                                         <span className="text-xs font-bold text-[#856404] uppercase">
                                             EANs Adicionales ({(selectedMaterial.additionalEans || []).length})
                                         </span>
@@ -457,8 +457,8 @@ export default function EANManager({ materials = [], onUpdateMaterial, onClose, 
                                                     <td className="px-4 py-2 text-xs font-mono text-[#6A6D70]">{entry.createdAt}</td>
                                                     <td className="px-4 py-2">
                                                         {validateEAN13(entry.ean)
-                                                            ? <CheckCircle size={14} className="text-green-500" />
-                                                            : <AlertTriangle size={14} className="text-red-500" />
+                                                            ? <CircleCheck size={14} className="text-green-500" />
+                                                            : <TriangleAlert size={14} className="text-red-500" />
                                                         }
                                                     </td>
                                                     <td className="px-4 py-2">
@@ -485,7 +485,7 @@ export default function EANManager({ materials = [], onUpdateMaterial, onClose, 
                                     </table>
                                 ) : (
                                     <div className="p-6 text-center text-sm text-[#6A6D70]">
-                                        <CheckCircle size={24} className="mx-auto mb-2 text-green-400" />
+                                        <CircleCheck size={24} className="mx-auto mb-2 text-green-400" />
                                         Este material no tiene EANs adicionales. ¡Datos limpios!
                                     </div>
                                 )}

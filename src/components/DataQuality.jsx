@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import {
-    Search, AlertTriangle, CheckCircle, ChevronRight, ChevronDown,
+    Search, TriangleAlert, CircleCheck, ChevronRight, ChevronDown,
     Download, Zap, Eye, X, Filter, BarChart3, Users, Tag, Layers
 } from 'lucide-react';
 
@@ -215,7 +215,7 @@ export default function DataQuality({ materials = [], onClose, onNavigate }) {
         return (
             <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center">
                 <div className="bg-white rounded-2xl p-8 text-center max-w-md">
-                    <AlertTriangle size={48} className="text-amber-500 mx-auto mb-4" />
+                    <TriangleAlert size={48} className="text-amber-500 mx-auto mb-4" />
                     <h3 className="text-lg font-bold mb-2">Sin datos para analizar</h3>
                     <p className="text-sm text-gray-500 mb-4">Primero carga datos con /nIMPORT o usa el dataset de demostración</p>
                     <button onClick={onClose} className="px-4 py-2 bg-[#0854A0] text-white rounded-lg cursor-pointer">Cerrar</button>
@@ -351,24 +351,24 @@ export default function DataQuality({ materials = [], onClose, onNavigate }) {
                                 <div className="space-y-2">
                                     {analysis.pairs.length > 0 && (
                                         <div className="flex items-start gap-2 text-sm">
-                                            <AlertTriangle size={14} className="text-red-500 mt-0.5 flex-shrink-0" />
+                                            <TriangleAlert size={14} className="text-red-500 mt-0.5 flex-shrink-0" />
                                             <span><strong className="text-red-600">{analysis.pairs.length} pares sospechosos</strong> de duplicados detectados por similitud de nombre</span>
                                         </div>
                                     )}
                                     {analysis.vendorIssues.length > 0 && (
                                         <div className="flex items-start gap-2 text-sm">
-                                            <AlertTriangle size={14} className="text-amber-500 mt-0.5 flex-shrink-0" />
+                                            <TriangleAlert size={14} className="text-amber-500 mt-0.5 flex-shrink-0" />
                                             <span><strong className="text-amber-600">{analysis.vendorIssues.length} proveedores</strong> tienen materiales con nombres sospechosamente similares</span>
                                         </div>
                                     )}
                                     {analysis.criticalCount > 0 && (
                                         <div className="flex items-start gap-2 text-sm">
-                                            <AlertTriangle size={14} className="text-red-500 mt-0.5 flex-shrink-0" />
+                                            <TriangleAlert size={14} className="text-red-500 mt-0.5 flex-shrink-0" />
                                             <span><strong className="text-red-600">{analysis.criticalCount} materiales</strong> tienen descripciones en estado crítico</span>
                                         </div>
                                     )}
                                     <div className="flex items-start gap-2 text-sm">
-                                        <CheckCircle size={14} className="text-green-500 mt-0.5 flex-shrink-0" />
+                                        <CircleCheck size={14} className="text-green-500 mt-0.5 flex-shrink-0" />
                                         <span><strong className="text-green-600">{analysis.goodCount} materiales</strong> ({((analysis.goodCount / analysis.total) * 100).toFixed(0)}%) tienen naming correcto</span>
                                     </div>
                                 </div>
@@ -377,7 +377,7 @@ export default function DataQuality({ materials = [], onClose, onNavigate }) {
                             {/* Action plan */}
                             <div className="bg-gradient-to-r from-[#0854A0] to-[#0A6ED1] rounded-xl p-5 text-white">
                                 <h4 className="font-bold text-sm mb-3 flex items-center gap-2">
-                                    <CheckCircle size={16} /> Plan de Ataque Recomendado
+                                    <CircleCheck size={16} /> Plan de Ataque Recomendado
                                 </h4>
                                 <div className="grid grid-cols-3 gap-4 text-xs">
                                     <div className="bg-white/10 rounded-lg p-3">
@@ -409,7 +409,7 @@ export default function DataQuality({ materials = [], onClose, onNavigate }) {
 
                             {analysis.pairs.length === 0 ? (
                                 <div className="text-center py-12">
-                                    <CheckCircle size={48} className="text-green-400 mx-auto mb-4" />
+                                    <CircleCheck size={48} className="text-green-400 mx-auto mb-4" />
                                     <p className="text-sm text-gray-500">No se detectaron duplicados sospechosos</p>
                                 </div>
                             ) : (
@@ -419,8 +419,8 @@ export default function DataQuality({ materials = [], onClose, onNavigate }) {
                                             <div className="flex items-center justify-between mb-2">
                                                 <div className="flex items-center gap-2">
                                                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${pair.similarity >= 85 ? 'bg-red-500 text-white' :
-                                                            pair.similarity >= 75 ? 'bg-amber-500 text-white' :
-                                                                'bg-yellow-400 text-yellow-900'
+                                                        pair.similarity >= 75 ? 'bg-amber-500 text-white' :
+                                                            'bg-yellow-400 text-yellow-900'
                                                         }`}>
                                                         {pair.similarity}% similar
                                                     </span>
@@ -497,9 +497,9 @@ export default function DataQuality({ materials = [], onClose, onNavigate }) {
                                             <tr key={i} className={`border-t ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
                                                 <td className="px-3 py-2">
                                                     <span className={`inline-block w-10 text-center text-[10px] font-bold py-0.5 rounded-full ${r.naming.score < 30 ? 'bg-red-100 text-red-700' :
-                                                            r.naming.score < 60 ? 'bg-amber-100 text-amber-700' :
-                                                                r.naming.score < 80 ? 'bg-blue-100 text-blue-700' :
-                                                                    'bg-green-100 text-green-700'
+                                                        r.naming.score < 60 ? 'bg-amber-100 text-amber-700' :
+                                                            r.naming.score < 80 ? 'bg-blue-100 text-blue-700' :
+                                                                'bg-green-100 text-green-700'
                                                         }`}>
                                                         {r.naming.score}
                                                     </span>
@@ -510,9 +510,9 @@ export default function DataQuality({ materials = [], onClose, onNavigate }) {
                                                     <div className="space-y-0.5">
                                                         {r.naming.issues.map((iss, j) => (
                                                             <span key={j} className={`inline-block text-[10px] px-2 py-0.5 rounded mr-1 ${iss.severity === 'critical' ? 'bg-red-100 text-red-700' :
-                                                                    iss.severity === 'high' ? 'bg-amber-100 text-amber-700' :
-                                                                        iss.severity === 'medium' ? 'bg-blue-100 text-blue-700' :
-                                                                            'bg-gray-100 text-gray-600'
+                                                                iss.severity === 'high' ? 'bg-amber-100 text-amber-700' :
+                                                                    iss.severity === 'medium' ? 'bg-blue-100 text-blue-700' :
+                                                                        'bg-gray-100 text-gray-600'
                                                                 }`}>
                                                                 {iss.msg}
                                                             </span>
@@ -540,7 +540,7 @@ export default function DataQuality({ materials = [], onClose, onNavigate }) {
 
                             {analysis.vendorIssues.length === 0 ? (
                                 <div className="text-center py-12">
-                                    <CheckCircle size={48} className="text-green-400 mx-auto mb-4" />
+                                    <CircleCheck size={48} className="text-green-400 mx-auto mb-4" />
                                     <p className="text-sm text-gray-500">No se detectaron conflictos por proveedor</p>
                                 </div>
                             ) : (

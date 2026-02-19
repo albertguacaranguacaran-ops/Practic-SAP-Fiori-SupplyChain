@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import ExcelJS from 'exceljs';
 import {
-    Upload, FileSpreadsheet, CheckCircle, AlertTriangle,
+    Upload, FileSpreadsheet, CircleCheck, TriangleAlert,
     X, ChevronRight, Download, RefreshCw, Eye, Zap,
     ArrowRight, Database, Layers, Trash2
 } from 'lucide-react';
@@ -291,10 +291,10 @@ export default function DataImporter({ onImport, onClose, currentCount = 0 }) {
                     ].map((s, i) => (
                         <div key={i} className="flex items-center gap-2">
                             <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${step > s.num ? 'bg-green-500 text-white' :
-                                    step === s.num ? 'bg-[#0854A0] text-white' :
-                                        'bg-gray-200 text-gray-500'
+                                step === s.num ? 'bg-[#0854A0] text-white' :
+                                    'bg-gray-200 text-gray-500'
                                 }`}>
-                                {step > s.num ? <CheckCircle size={14} /> : s.num}
+                                {step > s.num ? <CircleCheck size={14} /> : s.num}
                             </div>
                             <span className={`text-xs font-medium ${step >= s.num ? 'text-[#32363A]' : 'text-gray-400'}`}>{s.label}</span>
                             {i < 3 && <ChevronRight size={14} className="text-gray-300 mx-1" />}
@@ -340,7 +340,7 @@ export default function DataImporter({ onImport, onClose, currentCount = 0 }) {
                                 <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                                     {errors.map((e, i) => (
                                         <p key={i} className="text-sm text-red-700 flex items-center gap-2">
-                                            <AlertTriangle size={14} /> {e}
+                                            <TriangleAlert size={14} /> {e}
                                         </p>
                                     ))}
                                 </div>
@@ -434,7 +434,7 @@ export default function DataImporter({ onImport, onClose, currentCount = 0 }) {
 
                             {!hasRequiredFields && (
                                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-2">
-                                    <AlertTriangle size={16} className="text-amber-500" />
+                                    <TriangleAlert size={16} className="text-amber-500" />
                                     <span className="text-xs text-amber-800">
                                         Debes mapear al menos <strong>ID Material</strong> y <strong>Descripción</strong> para continuar.
                                     </span>
@@ -475,7 +475,7 @@ export default function DataImporter({ onImport, onClose, currentCount = 0 }) {
                                     {validationIssues.map((v, i) => (
                                         <div key={i} className={`rounded-lg px-3 py-2 text-xs flex items-center gap-2 ${v.type === 'warning' ? 'bg-amber-50 border border-amber-200 text-amber-800' : 'bg-blue-50 border border-blue-200 text-blue-800'
                                             }`}>
-                                            {v.type === 'warning' ? <AlertTriangle size={13} /> : <Zap size={13} />}
+                                            {v.type === 'warning' ? <TriangleAlert size={13} /> : <Zap size={13} />}
                                             {v.msg}
                                         </div>
                                     ))}
@@ -565,7 +565,7 @@ export default function DataImporter({ onImport, onClose, currentCount = 0 }) {
                     {step === 4 && (
                         <div className="text-center py-12 space-y-6">
                             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                                <CheckCircle size={40} className="text-green-500" />
+                                <CircleCheck size={40} className="text-green-500" />
                             </div>
                             <div>
                                 <h3 className="text-2xl font-black text-[#32363A]">¡Importación Exitosa!</h3>

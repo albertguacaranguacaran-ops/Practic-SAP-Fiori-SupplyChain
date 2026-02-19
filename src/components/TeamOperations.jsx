@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 import {
-    Users, User, Package, Barcode, AlertTriangle, CheckCircle,
+    Users, User, Package, Barcode, TriangleAlert, CircleCheck,
     ClipboardList, TrendingDown, Scale, Search, ChevronRight,
     Briefcase, Target, ArrowRight, Settings, BarChart3,
-    FileText, Truck, ShoppingCart, X, HelpCircle, Eye
+    FileText, Truck, ShoppingCart, X, CircleHelp, Eye
 } from 'lucide-react';
 
 // Team structure

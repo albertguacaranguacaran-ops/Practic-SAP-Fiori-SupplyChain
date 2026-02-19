@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import {
-    CheckCircle, AlertTriangle, XCircle, Info,
+    CircleCheck, TriangleAlert, CircleX, Info,
     Clock, Database, User
 } from 'lucide-react';
 
 const STATUS_TYPES = {
-    success: { icon: CheckCircle, bg: 'bg-[#107E3E]', label: 'Éxito' },
-    warning: { icon: AlertTriangle, bg: 'bg-[#E9730C]', label: 'Advertencia' },
-    error: { icon: XCircle, bg: 'bg-[#BB0000]', label: 'Error' },
+    success: { icon: CircleCheck, bg: 'bg-[#107E3E]', label: 'Éxito' },
+    warning: { icon: TriangleAlert, bg: 'bg-[#E9730C]', label: 'Advertencia' },
+    error: { icon: CircleX, bg: 'bg-[#BB0000]', label: 'Error' },
     info: { icon: Info, bg: 'bg-[#0854A0]', label: 'Info' },
     neutral: { icon: null, bg: 'bg-white text-[#32363A]', label: '' }
 };

@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import {
     FileText, Tag, Hash, Calendar, ClipboardList,
-    CheckCircle, Circle, ChevronRight, Download, Eye,
-    Briefcase, Target, BookOpen, Zap, AlertTriangle,
+    CircleCheck, Circle, ChevronRight, Download, Eye,
+    Briefcase, Target, BookOpen, Zap, TriangleAlert,
     Package, BarChart3, ArrowRight, Search, Layers
 } from 'lucide-react';
 import { exportToExcel } from '../utils/excelExport';
@@ -452,7 +452,7 @@ export default function MasterPlan({ materials = [], onNavigate, onClose, showSt
                                                                 className="text-xs px-3 py-2 rounded-lg border flex items-start gap-1.5"
                                                                 style={{ backgroundColor: `${cf.color}08`, borderColor: `${cf.color}20` }}
                                                             >
-                                                                <CheckCircle size={12} className="mt-0.5 flex-shrink-0" style={{ color: cf.color }} />
+                                                                <CircleCheck size={12} className="mt-0.5 flex-shrink-0" style={{ color: cf.color }} />
                                                                 <span className="text-[#32363A]">{f}</span>
                                                             </div>
                                                         ))}
@@ -482,7 +482,7 @@ export default function MasterPlan({ materials = [], onNavigate, onClose, showSt
                                 {/* Summary box */}
                                 <div className="bg-gradient-to-r from-[#0854A0] to-[#0A6ED1] rounded-xl p-5 text-white shadow-lg">
                                     <h3 className="font-bold text-sm flex items-center gap-2 mb-2">
-                                        <CheckCircle size={16} /> Resultado Final
+                                        <CircleCheck size={16} /> Resultado Final
                                     </h3>
                                     <p className="text-xs text-white/90">
                                         Cuando los 7 pasos están completos, el material tiene su <strong>cédula completa</strong>: puede ser comprado, almacenado, vendido, transportado y facturado sin errores. Cada campo vacío es un riesgo operacional.

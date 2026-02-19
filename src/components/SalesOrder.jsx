@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
     Plus, Trash2, Save, X, ShoppingCart, Package,
-    Calculator, Truck, AlertTriangle, CheckCircle
+    Calculator, Truck, TriangleAlert, CircleCheck
 } from 'lucide-react';
 import { calculateStackingFactor, calculateOrderLogistics } from '../utils/packagingCalc';
 
@@ -310,7 +310,7 @@ export default function SalesOrder({
                                     {/* Warnings */}
                                     {logistics.details.some(d => d.error) && (
                                         <div className="mt-3 p-2 bg-[#FFF3CD] rounded text-sm flex items-start gap-2">
-                                            <AlertTriangle size={16} className="text-[#856404] flex-shrink-0 mt-0.5" />
+                                            <TriangleAlert size={16} className="text-[#856404] flex-shrink-0 mt-0.5" />
                                             <div>
                                                 <span className="font-semibold text-[#856404]">Advertencia:</span>
                                                 <span className="text-[#856404]"> Algunos materiales no tienen dimensiones completas.</span>
