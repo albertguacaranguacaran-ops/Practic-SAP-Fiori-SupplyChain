@@ -37,6 +37,7 @@ import DataImporter from './components/DataImporter';
 import DataQuality from './components/DataQuality';
 import Training from './components/Training';
 import ManagementReport from './components/ManagementReport';
+import ME2M from './components/ME2M';
 import { useBilling } from './lib/useBilling';
 import { exportToExcel } from './utils/excelExport';
 
@@ -328,6 +329,12 @@ function App() {
         // Management Report
         setModalMode('report');
         showInfo('Reporte de Gestión — Análisis cruzado de materiales, compras y ventas');
+        break;
+
+      case '/nME2M':
+        // Purchase Orders by Material
+        setModalMode('me2m');
+        showInfo('ME2M — Lista de pedidos de compra por material');
         break;
 
       case '/nMENU':
@@ -1021,6 +1028,16 @@ function App() {
           materials={products}
           purchaseOrders={orders}
           salesOrders={salesOrders}
+          onClose={closeModal}
+          showStatus={(msg, type) => type === 'success' ? showSuccess(msg) : showError(msg)}
+        />
+      )}
+
+      {modalMode === 'me2m' && (
+        <ME2M
+          purchaseOrders={orders}
+          materials={products}
+          vendors={vendors}
           onClose={closeModal}
           showStatus={(msg, type) => type === 'success' ? showSuccess(msg) : showError(msg)}
         />
