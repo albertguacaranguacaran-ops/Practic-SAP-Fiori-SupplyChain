@@ -35,7 +35,7 @@ import MasterPlan from './components/MasterPlan';
 import Presentation from './components/Presentation';
 import DataImporter from './components/DataImporter';
 import DataQuality from './components/DataQuality';
-// import Training from './components/Training';
+import Training from './components/Training';
 import { useBilling } from './lib/useBilling';
 import { exportToExcel } from './utils/excelExport';
 
@@ -998,7 +998,7 @@ function App() {
         />
       )}
 
-      {/* modalMode === 'train' && (
+      {modalMode === 'train' && (
         <Training
           activeScenario={activeTraining}
           onStartScenario={(sc) => {
@@ -1008,17 +1008,17 @@ function App() {
           onNavigate={handleTransaction}
           onClose={closeModal}
         />
-      ) */}
+      )}
 
       {/* Persistent Training Overlay */}
-      {/* activeTraining && modalMode !== 'train' && (
+      {activeTraining && modalMode !== 'train' && (
         <Training
           activeScenario={activeTraining}
           isOverlay={true}
           onQuit={() => setActiveTraining(null)}
           onNavigate={(cmd) => handleTransaction(cmd)}
         />
-      ) */}
+      )}
 
     </div >
   );

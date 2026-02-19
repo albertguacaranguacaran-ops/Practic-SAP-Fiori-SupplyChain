@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import {
     Play, CheckCircle, ChevronRight, BookOpen, Target,
-    Trophy, AlertTriangle, ArrowRight, RefreshCw, X,
+    Trophy, AlertTriangle, ArrowRight, RefreshCw, X, HelpCircle,
     Package, ShoppingCart, Truck
 } from 'lucide-react';
 
@@ -219,7 +219,7 @@ export default function Training({ onNavigate, onClose, activeScenario, onStartS
             <div className="flex-1 overflow-auto p-8">
                 <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {SCENARIOS.map((sc) => {
-                        const Icon = sc.icon;
+                        const Icon = sc.icon || HelpCircle;
                         const isDone = completed[sc.id];
 
                         return (

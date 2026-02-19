@@ -34,7 +34,7 @@ const TRANSACTIONS = {
     '/nME23N': { name: 'Visualizar Pedido', module: 'MM', description: 'Visualizar pedido de compra' },
 
     // Inventory Management (MM-IM)
-    '/nMIGO': { name: 'Movigo Mercancía', module: 'MM', description: 'Entrada/Salida de mercancías' },
+    // '/nMIGO': { name: 'Movigo Mercancía', module: 'MM', description: 'Entrada/Salida de mercancías' },
 
     // Custom Dakafacil
     '/nPACK': { name: 'Modelo Empaque', module: 'LOG', description: 'Calcular modelo de empaque y apilamiento' },
@@ -60,7 +60,7 @@ const TRANSACTIONS = {
     '/nJOB': { name: 'Descripción de Cargo', module: 'HR', description: 'Dashboard y Responsabilidades SCM' },
     '/nMENU': { name: 'Menú SAP (Launchpad)', description: 'Ver todas las transacciones disponibles' },
     '/nDIC': { name: 'Diccionario ABAP', module: 'BASIS', description: 'Referencia de Tablas y Campos' },
-    '/nJOB': { name: 'Descripción de Cargo', module: 'HR', description: 'Dashboard y Responsabilidades SCM' },
+    // '/nJOB': { name: 'Descripción de Cargo', module: 'HR', description: 'Dashboard y Responsabilidades SCM' },
     '/nSU01': { name: 'Mant. Usuarios', module: 'BC', description: 'Mantenimiento de usuarios' },
     '/n': { name: 'Cancelar Trans.', module: 'SYS', description: 'Cancelar transacción actual' },
     '/nEX': { name: 'Salir Sistema', module: 'SYS', description: 'Cerrar sesión SAP' },
