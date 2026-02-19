@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, AlertCircle, Plus, Trash2, Calendar, Layout } from 'lucide-react';
+import { Save, CircleAlert, Plus, Trash2, Calendar, Layout } from 'lucide-react';
 
 export default function PurchaseOrder({ onSave, onCancel, showStatus, vendors = [], materials = [] }) {
     const [header, setHeader] = useState({

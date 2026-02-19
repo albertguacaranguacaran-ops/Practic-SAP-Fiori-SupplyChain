@@ -11,8 +11,8 @@ const STATUS_CONFIG = {
     duplicate: { icon: Copy, color: 'text-[#856404]', bg: 'bg-[#FFF3CD]', label: 'Duplicado' },
     low_stock: { icon: TrendingDown, color: 'text-[#BB0000]', bg: 'bg-[#FFEBEE]', label: 'Stock Bajo' },
     discontinued: { icon: Ban, color: 'text-[#6A6D70]', bg: 'bg-[#E0E0E0]', label: 'Descontinuado' },
-    missing_data: { icon: AlertCircle, color: 'text-[#E9730C]', bg: 'bg-[#FFF3E0]', label: 'Datos Faltantes' },
-    overweight: { icon: AlertTriangle, color: 'text-[#BB0000]', bg: 'bg-[#FFEBEE]', label: 'Sobrepeso' }
+    missing_data: { icon: CircleAlert, color: 'text-[#E9730C]', bg: 'bg-[#FFF3E0]', label: 'Datos Faltantes' },
+    overweight: { icon: TriangleAlert, color: 'text-[#BB0000]', bg: 'bg-[#FFEBEE]', label: 'Sobrepeso' }
 };
 
 const COLUMNS = [

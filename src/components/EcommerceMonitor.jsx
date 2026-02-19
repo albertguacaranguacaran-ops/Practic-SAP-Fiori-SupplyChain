@@ -57,7 +57,7 @@ export default function EcommerceMonitor({ onClose }) {
                     { id: 'role', label: '1. Rol del Coordinador', icon: Briefcase },
                     { id: 'workflow', label: '2. Roadmap de Ejecución', icon: ListChecks },
                     { id: 'strategy', label: '3. Calculadora (Recursos)', icon: Target },
-                    { id: 'audit', label: '4. Semáforo de Calidad', icon: CheckCircle },
+                    { id: 'audit', label: '4. Semáforo de Calidad', icon: CircleCheck },
                 ].map(tab => (
                     <button
                         key={tab.id}

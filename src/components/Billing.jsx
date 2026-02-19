@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Receipt, Search, Save, CheckCircle, AlertCircle } from 'lucide-react';
+import { Receipt, Search, Save, CircleCheck, CircleAlert } from 'lucide-react';
 
 export default function Billing({ orders, onCreateInvoice, onClose, showStatus }) {
     const [deliveryId, setDeliveryId] = useState('');

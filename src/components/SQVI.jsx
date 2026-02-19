@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Database, FileSpreadsheet, ArrowRight, CheckCircle, Info, Search, GitMerge, List, Filter, Code, Terminal, Download, FileText } from 'lucide-react';
+import { Database, FileSpreadsheet, ArrowRight, CircleCheck, Info, Search, GitMerge, List, Filter, Code, Terminal, Download, FileText } from 'lucide-react';
 
 const TUTORIALS = [
     {
@@ -295,7 +295,7 @@ export default function SQVI({ onClose }) {
                                             <ul className="text-left mt-4 space-y-3">
                                                 {selectedTutorial.joins.map((join, i) => (
                                                     <li key={i} className="text-xs flex items-start gap-2 bg-gray-50 p-2 rounded border border-gray-100">
-                                                        <CheckCircle size={14} className="text-green-500 mt-0.5 flex-shrink-0" />
+                                                        <CircleCheck size={14} className="text-green-500 mt-0.5 flex-shrink-0" />
                                                         <div>
                                                             <span className="font-mono text-gray-600">{join.from}</span>
                                                             <span className="text-gray-400 mx-1">↔</span>
@@ -351,13 +351,13 @@ export default function SQVI({ onClose }) {
                                             key={t.name}
                                             onClick={() => !isAdded && handleAddTable(t.name)}
                                             className={`p-3 rounded border text-sm cursor-pointer transition-all group ${isAdded
-                                                    ? 'bg-gray-50 border-gray-100 text-gray-400 cursor-default opacity-60'
-                                                    : 'bg-white border-gray-200 hover:border-blue-400 hover:shadow-md hover:-translate-y-0.5'
+                                                ? 'bg-gray-50 border-gray-100 text-gray-400 cursor-default opacity-60'
+                                                : 'bg-white border-gray-200 hover:border-blue-400 hover:shadow-md hover:-translate-y-0.5'
                                                 }`}
                                         >
                                             <div className="flex justify-between items-center mb-1">
                                                 <span className="font-bold font-mono text-gray-700 group-hover:text-blue-600">{t.name}</span>
-                                                {isAdded && <CheckCircle size={14} className="text-green-500" />}
+                                                {isAdded && <CircleCheck size={14} className="text-green-500" />}
                                             </div>
                                             <p className="text-[10px] text-gray-500 leading-tight">{t.desc}</p>
                                         </div>

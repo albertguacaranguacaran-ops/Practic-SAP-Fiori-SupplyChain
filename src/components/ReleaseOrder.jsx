@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckCircle, AlertCircle, Filter, Layout } from 'lucide-react';
+import { CircleCheck, CircleAlert, Filter, Layout } from 'lucide-react';
 
 export default function ReleaseOrder({ orders, onRelease, showStatus, onClose }) {
     const [filterCode, setFilterCode] = useState('M1'); // Release Code (e.g., M1 Manager)
@@ -96,7 +96,7 @@ export default function ReleaseOrder({ orders, onRelease, showStatus, onClose })
                                                 className="bg-white border border-green-500 text-green-600 hover:bg-green-50 px-2 py-1 rounded text-xs flex items-center gap-1 mx-auto transition-colors"
                                                 title="Liberar (Aprobar)"
                                             >
-                                                <CheckCircle size={14} /> Liberar
+                                                <CircleCheck size={14} /> Liberar
                                             </button>
                                         </td>
                                     </tr>

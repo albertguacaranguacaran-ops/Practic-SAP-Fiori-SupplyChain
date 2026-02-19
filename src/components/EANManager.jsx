@@ -19,7 +19,7 @@ const TUTORIAL_STEPS = [
     {
         title: '3. Corregir los Datos',
         description: 'Elimina EANs incorrectos, agrega los correctos, o intercambia el EAN principal si es necesario.',
-        icon: CheckCircle
+        icon: CircleCheck
     }
 ];
 

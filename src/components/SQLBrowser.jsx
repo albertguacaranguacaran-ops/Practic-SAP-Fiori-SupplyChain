@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import {
     Play, Download, Clock, Database, Table,
-    AlertCircle, CheckCircle, RotateCcw,
+    CircleAlert, CircleCheck, RotateCcw,
     Save, FolderOpen, Link2, BookOpen,
     ArrowRight, ChevronRight, FileSpreadsheet,
     Search, Filter, Eye, Zap
@@ -687,7 +687,7 @@ export default function SQLBrowser({ onClose, onStatusMessage, data = [] }) {
 
                 {error && (
                     <div className="p-4 flex items-start gap-2 text-red-700 bg-red-50 m-2 border border-red-200 rounded">
-                        <AlertCircle size={16} className="mt-0.5" />
+                        <CircleAlert size={16} className="mt-0.5" />
                         <div className="text-xs font-mono">{error}</div>
                     </div>
                 )}

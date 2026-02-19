@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
     LayoutDashboard, Users, TrendingUp, BookOpen,
-    Briefcase, Award, CheckCircle, Target, Package, Truck, ShoppingCart
+    Briefcase, Award, CircleCheck, Target, Package, Truck, ShoppingCart
 } from 'lucide-react';
 
 export default function ManagerDashboard({ onClose }) {
@@ -201,7 +201,7 @@ export default function ManagerDashboard({ onClose }) {
                                             <ul className="space-y-2">
                                                 {step.items.map((item, i) => (
                                                     <li key={i} className="flex items-center gap-2 text-sm text-[#6A6D70]">
-                                                        {item.label.includes('Listo') ? <CheckCircle size={14} className="text-green-500" /> : <div className="w-3.5 h-3.5 rounded-full border border-gray-300"></div>}
+                                                        {item.label.includes('Listo') ? <CircleCheck size={14} className="text-green-500" /> : <div className="w-3.5 h-3.5 rounded-full border border-gray-300"></div>}
                                                         <span>{item.label}</span>
                                                     </li>
                                                 ))}

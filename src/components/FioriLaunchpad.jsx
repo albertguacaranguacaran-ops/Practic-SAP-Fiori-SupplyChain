@@ -145,7 +145,7 @@ const TILE_GROUPS = [
                 code: '/nDUP',
                 title: 'Duplicados',
                 subtitle: 'Materiales duplicados',
-                icon: AlertTriangle,
+                icon: TriangleAlert,
                 color: '#BB0000',
                 count: '0'
             },

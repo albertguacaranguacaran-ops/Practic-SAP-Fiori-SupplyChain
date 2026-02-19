@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Truck, Package, CheckCircle, Search, Save, X } from 'lucide-react';
+import { Truck, Package, CircleCheck, Search, Save, X } from 'lucide-react';
 
 export default function OutboundDelivery({ orders, products, onPost, onClose, showStatus }) {
     const [searchTerm, setSearchTerm] = useState('');
@@ -115,7 +115,7 @@ export default function OutboundDelivery({ orders, products, onPost, onClose, sh
                                                 />
                                             </td>
                                             <td className="px-3 py-2 text-center">
-                                                {isFull ? <CheckCircle size={16} className="text-green-500 mx-auto" /> : <span className="text-xs text-orange-500">Pendiente</span>}
+                                                {isFull ? <CircleCheck size={16} className="text-green-500 mx-auto" /> : <span className="text-xs text-orange-500">Pendiente</span>}
                                             </td>
                                         </tr>
                                     );
