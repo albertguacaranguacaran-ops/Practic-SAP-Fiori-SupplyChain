@@ -1016,7 +1016,7 @@ function App() {
           activeScenario={activeTraining}
           isOverlay={true}
           onQuit={() => setActiveTraining(null)}
-          onNavigate={(cmd => handleTransaction(cmd))}
+          onNavigate={(cmd) => handleTransaction(cmd)}
         />
       )}
 
