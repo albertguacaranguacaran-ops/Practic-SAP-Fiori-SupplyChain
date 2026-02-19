@@ -36,6 +36,7 @@ import Presentation from './components/Presentation';
 import DataImporter from './components/DataImporter';
 import DataQuality from './components/DataQuality';
 import Training from './components/Training';
+import ManagementReport from './components/ManagementReport';
 import { useBilling } from './lib/useBilling';
 import { exportToExcel } from './utils/excelExport';
 
@@ -321,6 +322,12 @@ function App() {
         // Training Center
         setModalMode('train');
         showInfo('Centro de Entrenamiento SAP — Aprende haciendo');
+        break;
+
+      case '/nREPORT':
+        // Management Report
+        setModalMode('report');
+        showInfo('Reporte de Gestión — Análisis cruzado de materiales, compras y ventas');
         break;
 
       case '/nMENU':
@@ -1006,6 +1013,16 @@ function App() {
           }}
           onNavigate={handleTransaction}
           onClose={closeModal}
+        />
+      )}
+
+      {modalMode === 'report' && (
+        <ManagementReport
+          materials={products}
+          purchaseOrders={orders}
+          salesOrders={salesOrders}
+          onClose={closeModal}
+          showStatus={(msg, type) => type === 'success' ? showSuccess(msg) : showError(msg)}
         />
       )}
 

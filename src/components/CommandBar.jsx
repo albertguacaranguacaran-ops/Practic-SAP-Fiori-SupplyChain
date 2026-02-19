@@ -56,6 +56,7 @@ const TRANSACTIONS = {
     '/nIMPORT': { name: 'Importar Datos', module: 'BASIS', description: 'Cargar Excel de SAP al simulador' },
     '/nDQ': { name: 'Diagnóstico Naming', module: 'QM', description: 'Análisis de calidad de datos y naming' },
     '/nTRAIN': { name: 'Entrenamiento', module: 'PE', description: 'Escenarios guiados paso a paso' },
+    '/nREPORT': { name: 'Reporte de Gestión', module: 'SCM', description: 'Análisis cruzado: Materiales × Compras × Ventas por mes' },
     '/nGERENTE': { name: 'Descripción de Cargo', module: 'HR', description: 'Dashboard y Responsabilidades SCM' },
     '/nJOB': { name: 'Descripción de Cargo', module: 'HR', description: 'Dashboard y Responsabilidades SCM' },
     '/nMENU': { name: 'Menú SAP (Launchpad)', description: 'Ver todas las transacciones disponibles' },
