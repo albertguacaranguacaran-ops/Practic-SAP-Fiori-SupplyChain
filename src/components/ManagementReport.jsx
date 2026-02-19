@@ -2,7 +2,8 @@ import { useState, useMemo } from 'react';
 import {
     X, Download, Filter, Search, BarChart3,
     TrendingUp, TrendingDown, Package, ArrowUpDown,
-    CircleAlert, CircleCheck, Minus, ChevronDown
+    CircleAlert, CircleCheck, Minus, ChevronDown,
+    HelpCircle, FileSpreadsheet, ShoppingCart, Upload, ArrowRight, CheckCircle2
 } from 'lucide-react';
 import { exportToExcel } from '../utils/excelExport';
 
@@ -23,6 +24,7 @@ export default function ManagementReport({ materials = [], purchaseOrders = [], 
     const [sortCol, setSortCol] = useState('id');
     const [sortDir, setSortDir] = useState('asc');
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [showGuide, setShowGuide] = useState(materials.length === 0);
 
     // ═══════════════════════════════════════════
     //  BUILD MONTHLY DATA FROM ORDERS
@@ -243,6 +245,12 @@ export default function ManagementReport({ materials = [], purchaseOrders = [], 
                 </div>
                 <div className="flex items-center gap-3">
                     <button
+                        onClick={() => setShowGuide(!showGuide)}
+                        className={`${showGuide ? 'bg-yellow-400 text-gray-900' : 'bg-white/15 text-white hover:bg-white/25'} px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer`}
+                    >
+                        <HelpCircle size={16} /> {showGuide ? 'Ocultar Guía' : '❓ Guía'}
+                    </button>
+                    <button
                         onClick={handleExport}
                         className="bg-white/15 hover:bg-white/25 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer"
                     >
@@ -339,6 +347,211 @@ export default function ManagementReport({ materials = [], purchaseOrders = [], 
                 </div>
             </div>
 
+            {/* ═══ TUTORIAL GUIDE ═══ */}
+            {showGuide && (
+                <div className="px-6 py-4 bg-gradient-to-br from-blue-50 via-white to-yellow-50 border-b overflow-auto max-h-[60vh]">
+                    <div className="max-w-4xl mx-auto">
+                        <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2 mb-4">
+                            <HelpCircle size={20} className="text-blue-500" />
+                            ¿Cómo llenar este reporte?
+                        </h3>
+
+                        {/* Steps Flow */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            {/* STEP 1 */}
+                            <div className="bg-white rounded-xl border-2 border-blue-200 p-4 shadow-sm">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <span className="w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                                    <span className="font-bold text-gray-800">Importar Materiales</span>
+                                </div>
+                                <p className="text-xs text-gray-600 mb-3">
+                                    Usa <code className="bg-blue-100 px-1.5 py-0.5 rounded font-bold text-blue-800">/nIMPORT</code> para cargar tu Excel de SAP con los datos maestros.
+                                </p>
+                                <div className="bg-gray-50 rounded-lg p-3">
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase mb-2">Columnas requeridas en tu Excel:</p>
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2 text-xs">
+                                            <CheckCircle2 size={12} className="text-green-500 flex-shrink-0" />
+                                            <span><b>MATNR</b> — ID del material</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs">
+                                            <CheckCircle2 size={12} className="text-green-500 flex-shrink-0" />
+                                            <span><b>MAKTX</b> — Descripción</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs">
+                                            <CheckCircle2 size={12} className="text-green-500 flex-shrink-0" />
+                                            <span><b>LIFNR</b> — Proveedor</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs">
+                                            <CheckCircle2 size={12} className="text-green-500 flex-shrink-0" />
+                                            <span><b>LABST</b> — Stock actual</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs">
+                                            <CheckCircle2 size={12} className="text-green-500 flex-shrink-0" />
+                                            <span><b>STPRS</b> — Precio/Costo</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs">
+                                            <CheckCircle2 size={12} className="text-green-500 flex-shrink-0" />
+                                            <span><b>MINBE</b> — Punto de reorden</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs">
+                                            <CheckCircle2 size={12} className="text-green-500 flex-shrink-0" />
+                                            <span><b>MATKL</b> — Categoría/Grupo</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* STEP 2 */}
+                            <div className="bg-white rounded-xl border-2 border-emerald-200 p-4 shadow-sm">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <span className="w-7 h-7 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                                    <span className="font-bold text-gray-800">Crear Pedidos de Compra</span>
+                                </div>
+                                <p className="text-xs text-gray-600 mb-3">
+                                    Usa <code className="bg-emerald-100 px-1.5 py-0.5 rounded font-bold text-emerald-800">/nME21N</code> para registrar pedidos de compra. Las cantidades se acumularán automáticamente por mes.
+                                </p>
+                                <div className="bg-emerald-50 rounded-lg p-3">
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase mb-2">Así se llenan las columnas:</p>
+                                    <div className="text-xs text-gray-600 space-y-1">
+                                        <p>📦 <b>Compras Ene...Dic</b> → Se calculan del historial de pedidos (ME21N)</p>
+                                        <p>📅 La fecha del pedido determina el mes</p>
+                                        <p>🔢 La cantidad del ítem se suma al mes correspondiente</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* STEP 3 */}
+                            <div className="bg-white rounded-xl border-2 border-orange-200 p-4 shadow-sm">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <span className="w-7 h-7 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                                    <span className="font-bold text-gray-800">Crear Órdenes de Venta</span>
+                                </div>
+                                <p className="text-xs text-gray-600 mb-3">
+                                    Usa <code className="bg-orange-100 px-1.5 py-0.5 rounded font-bold text-orange-800">/nVA01</code> para registrar ventas. Igual que las compras, se acumulan por mes.
+                                </p>
+                                <div className="bg-orange-50 rounded-lg p-3">
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase mb-2">Así se llenan las columnas:</p>
+                                    <div className="text-xs text-gray-600 space-y-1">
+                                        <p>🛒 <b>Ventas Ene...Dic</b> → Se calculan del historial de ventas (VA01)</p>
+                                        <p>📅 La fecha de la orden determina el mes</p>
+                                        <p>🔢 La cantidad vendida se suma al mes correspondiente</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Visual Flow */}
+                        <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
+                            <p className="text-xs font-bold text-gray-500 uppercase mb-3">Flujo de datos del reporte</p>
+                            <div className="flex items-center justify-center gap-2 text-xs flex-wrap">
+                                <div className="bg-blue-100 text-blue-800 px-3 py-2 rounded-lg font-bold flex items-center gap-1">
+                                    <FileSpreadsheet size={14} /> Excel SAP
+                                </div>
+                                <ArrowRight size={16} className="text-gray-400" />
+                                <div className="bg-blue-500 text-white px-3 py-2 rounded-lg font-bold">
+                                    /nIMPORT
+                                </div>
+                                <ArrowRight size={16} className="text-gray-400" />
+                                <div className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg font-bold">
+                                    Materiales cargados ✓
+                                </div>
+                                <span className="text-gray-300 mx-1">+</span>
+                                <div className="bg-emerald-100 text-emerald-800 px-3 py-2 rounded-lg font-bold flex items-center gap-1">
+                                    <ShoppingCart size={14} /> /nME21N
+                                </div>
+                                <span className="text-gray-300 mx-1">+</span>
+                                <div className="bg-orange-100 text-orange-800 px-3 py-2 rounded-lg font-bold flex items-center gap-1">
+                                    <Upload size={14} /> /nVA01
+                                </div>
+                                <ArrowRight size={16} className="text-gray-400" />
+                                <div className="bg-purple-500 text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1">
+                                    <BarChart3 size={14} /> /nREPORT ✨
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ═══ READINESS CHECKER ═══ */}
+                        <div className={`rounded-xl p-5 border-2 ${materials.length > 0 ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-200'}`}>
+                            <div className="flex items-start gap-4">
+                                {/* Status indicators */}
+                                <div className="flex-1">
+                                    <div className="font-bold text-gray-700 uppercase text-xs mb-3">📋 Checklist de Preparación</div>
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            {materials.length > 0
+                                                ? <CheckCircle2 size={18} className="text-green-500" />
+                                                : <CircleAlert size={18} className="text-red-500" />
+                                            }
+                                            <span className={`text-sm font-bold ${materials.length > 0 ? 'text-green-700' : 'text-red-700'}`}>
+                                                {materials.length > 0
+                                                    ? `✅ ${materials.length.toLocaleString()} materiales cargados`
+                                                    : '❌ Sin materiales — Ejecuta /nIMPORT primero'
+                                                }
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            {purchaseOrders.length > 0
+                                                ? <CheckCircle2 size={18} className="text-green-500" />
+                                                : <CircleAlert size={18} className="text-yellow-500" />
+                                            }
+                                            <span className={`text-sm ${purchaseOrders.length > 0 ? 'font-bold text-green-700' : 'text-yellow-700'}`}>
+                                                {purchaseOrders.length > 0
+                                                    ? `✅ ${purchaseOrders.length} pedidos de compra registrados`
+                                                    : '⚠️ Sin pedidos de compra — Columnas Compras Ene..Dic aparecerán vacías (usa /nME21N)'
+                                                }
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            {salesOrders.length > 0
+                                                ? <CheckCircle2 size={18} className="text-green-500" />
+                                                : <CircleAlert size={18} className="text-yellow-500" />
+                                            }
+                                            <span className={`text-sm ${salesOrders.length > 0 ? 'font-bold text-green-700' : 'text-yellow-700'}`}>
+                                                {salesOrders.length > 0
+                                                    ? `✅ ${salesOrders.length} órdenes de venta registradas`
+                                                    : '⚠️ Sin órdenes de venta — Columnas Ventas Ene..Dic aparecerán vacías (usa /nVA01)'
+                                                }
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="flex flex-col gap-3 min-w-[200px]">
+                                    {materials.length > 0 ? (
+                                        <>
+                                            <div className="text-center mb-1">
+                                                <span className="text-lg">🎉</span>
+                                                <p className="text-sm font-bold text-green-700">¡Listo para generar!</p>
+                                            </div>
+                                            <button
+                                                onClick={() => setShowGuide(false)}
+                                                className="w-full bg-gradient-to-r from-[#0854A0] to-[#1873CC] text-white px-5 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all cursor-pointer"
+                                            >
+                                                <BarChart3 size={18} /> Ver Reporte Aquí
+                                            </button>
+                                            <button
+                                                onClick={() => { handleExport(); }}
+                                                className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all cursor-pointer"
+                                            >
+                                                <Download size={18} /> Exportar a Excel
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <div className="text-center">
+                                            <span className="text-3xl">📊</span>
+                                            <p className="text-sm font-bold text-red-600 mt-2">Aún no hay datos</p>
+                                            <p className="text-xs text-gray-500 mt-1">Importa tu Excel con <b>/nIMPORT</b> para comenzar</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* ═══ TABLE ═══ */}
             <div className="flex-1 overflow-auto">
                 <table className="w-full text-xs border-collapse min-w-[2200px]">
@@ -425,7 +638,7 @@ export default function ManagementReport({ materials = [], purchaseOrders = [], 
                     <tbody>
                         {filteredData.map((row, idx) => (
                             <tr key={row.id} className={`border-b border-gray-100 hover:bg-blue-50/50 transition-colors ${row.stockStatus === 'zero' ? 'bg-red-50/30' :
-                                    row.stockStatus === 'low' ? 'bg-yellow-50/30' : ''
+                                row.stockStatus === 'low' ? 'bg-yellow-50/30' : ''
                                 }`}>
                                 {/* ID */}
                                 <td className="px-3 py-1.5 font-mono font-bold text-[#0854A0] border-r border-gray-100 sticky left-0 bg-white z-10 whitespace-nowrap">
@@ -447,8 +660,8 @@ export default function ManagementReport({ materials = [], purchaseOrders = [], 
                                 </td>
                                 {/* Stock */}
                                 <td className={`px-3 py-1.5 text-right border-r border-gray-100 font-bold ${row.stockStatus === 'zero' ? 'text-red-600 bg-red-50' :
-                                        row.stockStatus === 'low' ? 'text-yellow-600 bg-yellow-50' :
-                                            'text-gray-800'
+                                    row.stockStatus === 'low' ? 'text-yellow-600 bg-yellow-50' :
+                                        'text-gray-800'
                                     }`}>
                                     {row.stock.toLocaleString()}
                                     {row.stockStatus === 'low' && <CircleAlert size={10} className="inline ml-1 text-yellow-500" />}
