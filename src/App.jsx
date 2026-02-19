@@ -75,8 +75,7 @@ function App() {
   const [showLaunchpad, setShowLaunchpad] = useState(false);
   const [activeTraining, setActiveTraining] = useState(null); // { id, step, ... }
 
-  // Billing & Purchase Orders
-  const { billingDocs, createBillingDoc, payer } = useBilling();
+  // Status messages
   const { status, showSuccess, showError, showWarning, showInfo } = useStatusMessage();
 
   // Sync filtered products when products change
