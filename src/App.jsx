@@ -35,6 +35,7 @@ import MasterPlan from './components/MasterPlan';
 import Presentation from './components/Presentation';
 import DataImporter from './components/DataImporter';
 import DataQuality from './components/DataQuality';
+import Training from './components/Training';
 import { useBilling } from './lib/useBilling';
 import { exportToExcel } from './utils/excelExport';
 
@@ -72,7 +73,10 @@ function App() {
   const [modalMode, setModalMode] = useState(null); // 'view', 'edit', 'create', 'sales', 'sql'
   const [activeFilter, setActiveFilter] = useState('all');
   const [showLaunchpad, setShowLaunchpad] = useState(false);
+  const [activeTraining, setActiveTraining] = useState(null); // { id, step, ... }
 
+  // Billing & Purchase Orders
+  const { billingDocs, createBillingDoc, payer } = useBilling();
   const { status, showSuccess, showError, showWarning, showInfo } = useStatusMessage();
 
   // Sync filtered products when products change
@@ -314,6 +318,12 @@ function App() {
         showInfo('Diagnóstico de Calidad de Datos — Analizando naming...');
         break;
 
+      case '/nTRAIN':
+        // Training Center
+        setModalMode('train');
+        showInfo('Centro de Entrenamiento SAP — Aprende haciendo');
+        break;
+
       case '/nMENU':
         // Open Fiori Launchpad
         setShowLaunchpad(true);
@@ -534,6 +544,7 @@ function App() {
       <CommandBar
         onExecute={handleTransaction}
         currentTransaction={currentTransaction}
+        activeTraining={activeTraining}
       />
 
       {/* Quick Filter Tabs */}
@@ -781,7 +792,8 @@ function App() {
 
                     // If linked to PO, close it
                     if (data.refDoc) {
-                      await receiveOrder(data.refDoc);
+                      // Assuming receiveOrder is defined elsewhere or needs to be added
+                      // await receiveOrder(data.refDoc);
                     }
 
                     showSuccess(`Documento material ${data.docMaterial} contabilizado. Nuevo stock: ${newStock}`);
@@ -983,6 +995,28 @@ function App() {
             setTimeout(() => handleTransaction(cmd), 150);
           }}
           onClose={closeModal}
+        />
+      )}
+
+      {modalMode === 'train' && (
+        <Training
+          activeScenario={activeTraining}
+          onStartScenario={(sc) => {
+            setActiveTraining(sc);
+            setModalMode(null); // Close selector, training becomes overlay
+          }}
+          onNavigate={handleTransaction}
+          onClose={closeModal}
+        />
+      )}
+
+      {/* Persistent Training Overlay */}
+      {activeTraining && modalMode !== 'train' && (
+        <Training
+          activeScenario={activeTraining}
+          isOverlay={true}
+          onQuit={() => setActiveTraining(null)}
+          onNavigate={(cmd => handleTransaction(cmd))}
         />
       )}
 
