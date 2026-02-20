@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import {
     Search, TriangleAlert, CircleCheck, ChevronRight, ChevronDown,
-    Download, Zap, Eye, X, Filter, BarChart3, Users, Tag, Layers
+    Download, Zap, Eye, X, Filter, BarChart3, Users, Tag, Layers, ClipboardList
 } from 'lucide-react';
 
 // ============================================================
@@ -204,10 +204,43 @@ export default function DataQuality({ materials = [], onClose, onNavigate }) {
         const medCount = namingResults.filter(r => r.naming.score >= 60 && r.naming.score < 80).length;
         const goodCount = namingResults.filter(r => r.naming.score >= 80).length;
 
+        // 6. Gaps criticos para eCommerce & Supply Chain
+        const sinEAN = materials.filter(m => !m.ean || m.ean === '' || m.ean === '0').length;
+        const sinPeso = materials.filter(m => !m.pesoNeto || m.pesoNeto === 0).length;
+        const sinDimensiones = materials.filter(m => !m.largo || !m.ancho || !m.alto || m.largo === 0).length;
+        const sinReorden = materials.filter(m => !m.puntoReorden || m.puntoReorden === 0).length;
+        const sinCategoria = materials.filter(m => !m.categoria || m.categoria === '').length;
+        const sinProveedor = materials.filter(m => !m.proveedor || m.proveedor === '').length;
+
+        // 7. Materiales con TODOS los gaps (los peores)
+        const sinTodo = materials.filter(m =>
+            (!m.ean || m.ean === '' || m.ean === '0') &&
+            (!m.pesoNeto || m.pesoNeto === 0) &&
+            (!m.largo || m.largo === 0)
+        ).length;
+
+        // 8. Por categoria: los grupos con mas gaps
+        const categoryGaps = {};
+        materials.forEach(m => {
+            const cat = m.categoria || m.matkl || 'Sin Categoría';
+            if (!categoryGaps[cat]) categoryGaps[cat] = { total: 0, sinEAN: 0, sinDim: 0, sinPeso: 0 };
+            categoryGaps[cat].total++;
+            if (!m.ean || m.ean === '' || m.ean === '0') categoryGaps[cat].sinEAN++;
+            if (!m.largo || m.largo === 0) categoryGaps[cat].sinDim++;
+            if (!m.pesoNeto || m.pesoNeto === 0) categoryGaps[cat].sinPeso++;
+        });
+        const topCategoryGaps = Object.entries(categoryGaps)
+            .map(([cat, g]) => ({ cat, ...g, score: Math.round(((g.sinEAN + g.sinDim + g.sinPeso) / (g.total * 3)) * 100) }))
+            .filter(g => g.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 8);
+
         return {
             total: n, avgScore, namingResults, pairs,
             criticalCount, highCount, medCount, goodCount,
             vendorIssues, vendorMap,
+            gaps: { sinEAN, sinPeso, sinDimensiones, sinReorden, sinCategoria, sinProveedor, sinTodo },
+            topCategoryGaps,
         };
     }, [materials]);
 
@@ -248,6 +281,7 @@ export default function DataQuality({ materials = [], onClose, onNavigate }) {
         { id: 'duplicates', label: `Duplicados (${analysis.pairs.length})`, icon: Layers },
         { id: 'naming', label: 'Naming', icon: Tag },
         { id: 'vendor', label: `Por Proveedor (${analysis.vendorIssues.length})`, icon: Users },
+        { id: 'plan', label: 'Plan de Mejoras', icon: ClipboardList },
     ];
 
     return (
@@ -592,6 +626,195 @@ export default function DataQuality({ materials = [], onClose, onNavigate }) {
                             )}
                         </div>
                     )}
+
+                    {/* === PLAN DE MEJORAS === */}
+                    {tab === 'plan' && (() => {
+                        const g = analysis.gaps;
+                        const pct = (x) => ((x / analysis.total) * 100).toFixed(0);
+
+                        const kpis = [
+                            {
+                                icon: '📦', label: 'Códigos EAN', count: g.sinEAN, pct: pct(g.sinEAN),
+                                impact: 'eCommerce, Logística, Exportación', tx: '/nEAN → MM02',
+                                priority: g.sinEAN > analysis.total * 0.3 ? 'CRÍTICO' : g.sinEAN > 0 ? 'ALTO' : 'OK',
+                                color: g.sinEAN > analysis.total * 0.3 ? 'red' : g.sinEAN > 0 ? 'amber' : 'green',
+                            },
+                            {
+                                icon: '📐', label: 'Dimensiones (L×A×H)', count: g.sinDimensiones, pct: pct(g.sinDimensiones),
+                                impact: 'Flete, Estiba, Ficha eCommerce, WM', tx: 'MM02 → Vista Planta',
+                                priority: g.sinDimensiones > analysis.total * 0.4 ? 'CRÍTICO' : g.sinDimensiones > 0 ? 'ALTO' : 'OK',
+                                color: g.sinDimensiones > analysis.total * 0.4 ? 'red' : g.sinDimensiones > 0 ? 'amber' : 'green',
+                            },
+                            {
+                                icon: '⚖️', label: 'Peso Neto / Bruto', count: g.sinPeso, pct: pct(g.sinPeso),
+                                impact: 'Cálculo flete, Costo logístico, KPI almacén', tx: 'MM02 → Vista Planta',
+                                priority: g.sinPeso > analysis.total * 0.3 ? 'CRÍTICO' : g.sinPeso > 0 ? 'ALTO' : 'OK',
+                                color: g.sinPeso > analysis.total * 0.3 ? 'red' : g.sinPeso > 0 ? 'amber' : 'green',
+                            },
+                            {
+                                icon: '🔄', label: 'Punto de Reorden (MINBE)', count: g.sinReorden, pct: pct(g.sinReorden),
+                                impact: 'MRP, Propuestas automáticas MD04, Quiebre stock', tx: 'MM02 → MRP 1',
+                                priority: g.sinReorden > analysis.total * 0.5 ? 'CRÍTICO' : g.sinReorden > 0 ? 'MEDIO' : 'OK',
+                                color: g.sinReorden > analysis.total * 0.5 ? 'red' : g.sinReorden > 0 ? 'blue' : 'green',
+                            },
+                            {
+                                icon: '🏷️', label: 'Naming / Descripción', count: analysis.criticalCount, pct: pct(analysis.criticalCount),
+                                impact: 'Búsqueda SAP, Reporting, eCommerce', tx: '/nDQ → Naming',
+                                priority: analysis.criticalCount > analysis.total * 0.2 ? 'CRÍTICO' : analysis.criticalCount > 0 ? 'MEDIO' : 'OK',
+                                color: analysis.criticalCount > analysis.total * 0.2 ? 'red' : analysis.criticalCount > 0 ? 'blue' : 'green',
+                            },
+                        ];
+
+                        const colorClass = {
+                            red: { badge: 'bg-red-100 text-red-700', bar: 'bg-red-500', border: 'border-red-200' },
+                            amber: { badge: 'bg-amber-100 text-amber-700', bar: 'bg-amber-500', border: 'border-amber-200' },
+                            blue: { badge: 'bg-blue-100 text-blue-700', bar: 'bg-blue-400', border: 'border-blue-200' },
+                            green: { badge: 'bg-green-100 text-green-700', bar: 'bg-green-500', border: 'border-green-200' },
+                        };
+
+                        return (
+                            <div className="space-y-6">
+                                {/* Header */}
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-base font-bold text-[#32363A]">Plan de Mejoras — Datos Maestros</h3>
+                                        <p className="text-xs text-gray-500">{analysis.total.toLocaleString()} materiales analizados · Calculado desde datos reales importados</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-xs text-gray-400">Materiales sin ningún dato</div>
+                                        <div className="text-2xl font-black text-red-500">{g.sinTodo.toLocaleString()}</div>
+                                        <div className="text-[10px] text-gray-400">sin EAN + sin peso + sin dimensiones</div>
+                                    </div>
+                                </div>
+
+                                {/* KPI Gaps */}
+                                <div className="space-y-2">
+                                    {kpis.map((kpi, i) => (
+                                        <div key={i} className={`border rounded-xl p-4 ${colorClass[kpi.color].border}`}>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-xl">{kpi.icon}</span>
+                                                    <div>
+                                                        <span className="text-sm font-bold text-[#32363A]">{kpi.label}</span>
+                                                        <p className="text-[10px] text-gray-400">Impacta: {kpi.impact}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${colorClass[kpi.color].badge}`}>{kpi.priority}</span>
+                                                    <div className="text-right">
+                                                        <div className="text-lg font-black text-[#32363A]">{kpi.count.toLocaleString()}</div>
+                                                        <div className="text-[10px] text-gray-400">{kpi.pct}% del catálogo</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex-1 bg-gray-100 rounded-full h-1.5">
+                                                    <div className={`h-1.5 rounded-full ${colorClass[kpi.color].bar}`} style={{ width: `${Math.min(kpi.pct, 100)}%` }} />
+                                                </div>
+                                                <span className="text-[10px] font-mono text-gray-400">{kpi.tx}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Por Categoría */}
+                                {analysis.topCategoryGaps.length > 0 && (
+                                    <div className="rounded-xl border overflow-hidden">
+                                        <div className="bg-gray-50 px-4 py-2 border-b">
+                                            <h4 className="text-xs font-bold text-gray-600">Categorías Más Afectadas — Prioridad de Ataque</h4>
+                                        </div>
+                                        <table className="w-full text-xs">
+                                            <thead>
+                                                <tr className="text-gray-400 bg-gray-50 border-b">
+                                                    <th className="text-left px-3 py-2">Categoría</th>
+                                                    <th className="text-center px-3 py-2">Total</th>
+                                                    <th className="text-center px-3 py-2">Sin EAN</th>
+                                                    <th className="text-center px-3 py-2">Sin Dim.</th>
+                                                    <th className="text-center px-3 py-2">Sin Peso</th>
+                                                    <th className="text-center px-3 py-2">Gap%</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {analysis.topCategoryGaps.map((g, i) => (
+                                                    <tr key={i} className={`border-t ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                                        <td className="px-3 py-2 font-medium text-[#32363A]">{g.cat}</td>
+                                                        <td className="px-3 py-2 text-center text-gray-500">{g.total}</td>
+                                                        <td className="px-3 py-2 text-center">
+                                                            <span className={g.sinEAN > 0 ? 'text-red-600 font-bold' : 'text-green-500'}>{g.sinEAN}</span>
+                                                        </td>
+                                                        <td className="px-3 py-2 text-center">
+                                                            <span className={g.sinDim > 0 ? 'text-amber-600 font-bold' : 'text-green-500'}>{g.sinDim}</span>
+                                                        </td>
+                                                        <td className="px-3 py-2 text-center">
+                                                            <span className={g.sinPeso > 0 ? 'text-amber-600 font-bold' : 'text-green-500'}>{g.sinPeso}</span>
+                                                        </td>
+                                                        <td className="px-3 py-2 text-center">
+                                                            <div className="flex items-center gap-1">
+                                                                <div className="flex-1 bg-gray-200 rounded-full h-1.5">
+                                                                    <div className="h-1.5 rounded-full bg-red-400" style={{ width: `${g.score}%` }} />
+                                                                </div>
+                                                                <span className="text-[10px] font-mono text-red-500 w-8">{g.score}%</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+
+                                {/* 30-60-90 Plan */}
+                                <div className="grid grid-cols-3 gap-4">
+                                    {[
+                                        {
+                                            fase: 'Días 1-30', color: '#EF4444', label: 'Diagnóstico & Quick Wins',
+                                            tasks: [
+                                                `Exportar MARA + MARM de SAP (SE16N)`,
+                                                `Identificar los ${Math.min(g.sinTodo, 500)} artículos sin ningún dato`,
+                                                `Fijar EAN en artículos de mayor rotación`,
+                                                `Capturar dimensiones: TV, Neveras, Lavadoras (Categ. A)`,
+                                                `Activar tipo de planificación VB en artículos clave`,
+                                            ]
+                                        },
+                                        {
+                                            fase: 'Días 31-60', color: '#F59E0B', label: 'Enriquecimiento Masivo',
+                                            tasks: [
+                                                `Completar dimensiones en ${g.sinDimensiones.toLocaleString()} artículos restantes`,
+                                                `Completar peso neto/bruto: ${g.sinPeso.toLocaleString()} artículos`,
+                                                `Asignar punto de reorden por categoría (VB/VM)`,
+                                                `Corregir naming crítico: ${analysis.criticalCount} artículos`,
+                                                `Validar ${analysis.pairs.length} posibles duplicados`,
+                                            ]
+                                        },
+                                        {
+                                            fase: 'Días 61-90', color: '#22C55E', label: 'eCommerce LIVE',
+                                            tasks: [
+                                                `100% artículos Categoría A con EAN + dimensiones`,
+                                                `MRP activo: MD04 genera propuestas automáticas`,
+                                                `Dashboard eCommerce muestra artículos listos`,
+                                                `KPIs: % completitud por categoría (reporte semanal)`,
+                                                `Publicar primeros 500 SKUs en plataforma digital`,
+                                            ]
+                                        },
+                                    ].map((fase, i) => (
+                                        <div key={i} className="rounded-xl border overflow-hidden">
+                                            <div className="px-4 py-3 text-white text-xs font-bold" style={{ backgroundColor: fase.color }}>
+                                                {fase.fase} — {fase.label}
+                                            </div>
+                                            <div className="p-4 space-y-2 bg-white">
+                                                {fase.tasks.map((t, j) => (
+                                                    <div key={j} className="flex items-start gap-2 text-xs text-gray-600">
+                                                        <span className="text-gray-300 mt-0.5 font-bold flex-shrink-0">{j + 1}.</span>
+                                                        <span>{t}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })()}
                 </div>
             </div>
         </div>
