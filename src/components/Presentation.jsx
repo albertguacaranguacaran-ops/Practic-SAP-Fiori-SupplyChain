@@ -66,84 +66,139 @@ function buildSlides(m) {
     const nsColor = ns >= 80 ? '#22C55E' : ns >= 60 ? '#F59E0B' : ns >= 40 ? '#E9730C' : '#EF4444';
 
     return [
-        // ── 0  OPENING ──────────────────────────────────
+        // ── 0  PORTADA PERSONAL ───────────────────────────
         {
-            id: 'opening', layout: 'bigText',
-            bg: 'from-[#0f172a] to-[#1e293b]',
-            line1: 'DATAELECTRIC',
-            line2: 'Plan de Gestión de Datos Maestros',
-            line3: 'Coordinador Supply Chain · Daka Venezuela · 2026',
+            id: 'opening', layout: 'profile',
+            bg: 'from-[#0f172a] via-[#0f1f3d] to-[#0f172a]',
+            name: 'Lic. Albert Guacarán',
+            title: 'Data Analyst · Consultor SQL & SAP · Lic. Comercio Internacional',
+            company: 'Daka Venezuela — Supply Chain Division',
+            date: 'Febrero 2026',
+            tags: ['SAP MM/SD', 'SQL', 'Supply Chain', 'eCommerce', 'Master Data'],
         },
 
-        // ── 1  THE NUMBER ─────────────────────────────────
+        // ── 1  AGENDA ─────────────────────────────────────
+        {
+            id: 'agenda', layout: 'agenda',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            actionTitle: 'Plan de transformación Supply Chain · Daka 2026',
+            items: [
+                { n: '01', label: 'Diagnóstico actual', desc: 'Estado real del catálogo SAP hoy' },
+                { n: '02', label: 'El problema del eCommerce', desc: 'Por qué el canal digital está bloqueado' },
+                { n: '03', label: 'Flujo Supply Chain completo', desc: 'MM → WM → SD → eCommerce' },
+                { n: '04', label: 'Herramienta de trabajo', desc: 'Demo del simulador SAP Dataelectric' },
+                { n: '05', label: 'Plan 30-60-90 días', desc: 'Fases, responsables y KPIs' },
+                { n: '06', label: 'Próximos pasos', desc: 'Lo que necesitamos para arrancar' },
+            ],
+        },
+
+        // ── 2  THE NUMBER ─────────────────────────────────
         {
             id: 'theNumber', layout: 'bigNumber',
             bg: 'from-[#0f172a] to-[#1e293b]',
             number: m.total.toLocaleString(),
-            label: 'materiales en el sistema',
-            sub: '¿Cuántos están realmente listos para operar?',
+            label: 'artículos en el sistema SAP de Daka',
+            sub: '¿Cuántos están realmente listos para el canal digital?',
         },
 
-        // ── 2  SITUATION ─────────────────────────────────
+        // ── 3  SITUATION — GAPS ───────────────────────────
         {
             id: 'situation', layout: 'statRow',
             bg: 'from-[#0f172a] to-[#1e293b]',
-            actionTitle: 'La calidad de datos maestros compromete la operación',
+            actionTitle: 'Los datos maestros incompletos bloquean el eCommerce',
             stats: [
-                { big: `${pctSinEAN}%`, label: 'sin código EAN', sub: 'No se escanean en POS', color: '#EF4444' },
-                { big: `${pctSinPeso}%`, label: 'sin peso/dimensiones', sub: 'Flete sin calcular', color: '#F59E0B' },
-                { big: `${pctSinReorden}%`, label: 'sin punto de reorden', sub: 'Sin alertas de compra', color: '#8B5CF6' },
+                { big: `${pctSinEAN}%`, label: 'sin código EAN/barras', sub: 'No escaneables · No publicables en web', color: '#EF4444' },
+                { big: `${pctSinPeso}%`, label: 'sin peso ni dimensiones', sub: 'Sin cubicaje · Sin costo de envío', color: '#F59E0B' },
+                { big: `${pctSinReorden}%`, label: 'sin punto de reorden', sub: 'Quiebres de stock sin alerta', color: '#8B5CF6' },
             ],
         },
 
-        // ── 3  COMPLICATION — MONEY ─────────────────────
+        // ── 4  ECOMM BLOQUEADO ───────────────────────────
+        {
+            id: 'eccommBlock', layout: 'ecBlock',
+            bg: 'from-[#1a0a2e] to-[#2d0f4e]',
+            actionTitle: 'Sin datos de dimensiones, el eCommerce no puede operar',
+            blocks: [
+                { icon: '📦', title: 'Logística de entrega', problem: 'Sin peso/volumen → no se calcula el flete', blocked: true },
+                { icon: '🛒', title: 'Ficha de producto web', problem: 'Sin alto/ancho/largo → página incompleta', blocked: true },
+                { icon: '🏭', title: 'Planificación almacén', problem: 'Sin cubicaje → espacio mal asignado', blocked: true },
+                { icon: '📊', title: 'MRP y reabastecimiento', problem: 'Sin stock mínimo → compras reactivas', blocked: true },
+            ],
+        },
+
+        // ── 5  SUPPLY CHAIN FLOW ──────────────────────────
+        {
+            id: 'scmFlow', layout: 'scmFlow',
+            bg: 'from-[#0f172a] to-[#1e293b]',
+            actionTitle: 'El Supply Chain completo que vamos a optimizar',
+            lanes: [
+                {
+                    label: 'COMPRAS (MM)', color: '#0854A0',
+                    steps: ['ME21N\nPedido Compra', 'ME28\nAprobar', 'MIGO\nEntrada Mercancía'],
+                },
+                {
+                    label: 'ALMACÉN (WM/IM)', color: '#107E3E',
+                    steps: ['MMBE\nStock', 'MB52\nPor Almacén', 'MD04\nMRP/Plan'],
+                },
+                {
+                    label: 'VENTAS (SD)', color: '#D97706',
+                    steps: ['VA01\nPedido Venta', 'VL01N\nEntrega', 'VF01\nFacturación'],
+                },
+                {
+                    label: 'eCOMMERCE', color: '#7C3AED',
+                    steps: ['EAN ✓\nCódigo único', 'Peso/Dim ✓\nFicha técnica', 'Precio ✓\nPublicación web'],
+                },
+            ],
+        },
+
+        // ── 6  MONEY AT STAKE ────────────────────────────
         {
             id: 'money', layout: 'bigNumber',
             bg: 'from-[#7f1d1d] to-[#991b1b]',
             number: `$${Number(costoFlete).toLocaleString()}`,
-            label: 'costo estimado anual en sobrecostos de flete',
-            sub: 'Porque no tenemos pesos ni dimensiones para calcular cubicaje',
+            label: 'costo estimado anual en sobrecostos de flete y errores logísticos',
+            sub: 'Artículos sin dimensiones → fletes estimados a ojo → pérdidas reales',
         },
 
-        // ── 4  THE FIX — BEFORE vs AFTER ─────────────────
+        // ── 7  THE FIX — BEFORE vs AFTER ─────────────────
         {
             id: 'naming', layout: 'contrast',
             bg: 'from-[#0f172a] to-[#1e293b]',
-            actionTitle: 'Estandarizar la descripción elimina duplicados y confusión',
+            actionTitle: 'Normalizar la descripción: el primer paso hacia datos de calidad',
             before: [
                 'nevera gris',
                 'cable',
-                'tubo',
+                'aire split 2t',
             ],
             after: [
-                'REFRIGERADOR SAMSUNG RT38 380L INOX',
-                'CABLE ELECTRICO THW 12AWG 100M',
-                'TUBO PVC 1/2" SCH40 6M PAVCO',
+                'REFRIGERADOR SAMSUNG RT38CG6000S9 380L INOX',
+                'CABLE ELECTRICO THW 12AWG 100M CONDUMEX',
+                'AIRE ACONDICIONADO SPLIT SAMSUNG 24000BTU 220V',
             ],
-            rule: 'TIPO + MARCA + MODELO + ESPECIFICACIÓN + MEDIDA',
+            rule: 'TIPO + MARCA + MODELO + ESPECIFICACIÓN + CAPACIDAD + UOM',
         },
 
-        // ── 5  CEDULACIÓN ────────────────────────────────
+        // ── 8  CEDULACIÓN PROCESS ─────────────────────────
         {
             id: 'cedula', layout: 'process',
             bg: 'from-[#0f172a] to-[#1e293b]',
-            actionTitle: '7 pasos dan identidad completa a cada material',
+            actionTitle: '7 pasos para dar identidad completa a cada artículo Daka',
             steps: [
-                { n: '01', icon: '📝', name: 'Solicitud', who: 'Compras' },
+                { n: '01', icon: '📝', name: 'Solicitud', who: 'Compras/Comercial' },
                 { n: '02', icon: '🔍', name: 'Validar', who: 'Master Data' },
                 { n: '03', icon: '🏗️', name: 'Crear MM01', who: 'Master Data' },
-                { n: '04', icon: '📊', name: 'Asignar EAN', who: 'Master Data' },
-                { n: '05', icon: '📦', name: 'Empaque', who: 'Ing. Empaque' },
-                { n: '06', icon: '⚙️', name: 'MRP', who: 'Compras' },
-                { n: '07', icon: '✅', name: 'Verificar', who: 'TÚ' },
+                { n: '04', icon: '📏', name: 'Dimensiones', who: 'Ing. Empaque' },
+                { n: '05', icon: '📊', name: 'Asignar EAN', who: 'Master Data' },
+                { n: '06', icon: '⚙️', name: 'Activar MRP', who: 'Compras' },
+                { n: '07', icon: '🚀', name: 'Publicar', who: 'eCommerce' },
             ],
         },
 
-        // ── 6  NAMING HEALTH SCORE ────────────────────────
+        // ── 9  NAMING SCORE ───────────────────────────────
         {
             id: 'namingScore', layout: 'scoreGauge',
             bg: 'from-[#0f172a] to-[#1e293b]',
-            actionTitle: 'Diagnóstico en vivo: calidad de naming',
+            actionTitle: 'Diagnóstico en vivo: calidad del catálogo actual',
             score: Math.round(ns), scoreColor: nsColor,
             distribution: [
                 { label: 'Crítico', count: m.namingCritical || 0, color: '#EF4444' },
@@ -151,113 +206,114 @@ function buildSlides(m) {
                 { label: 'Medio', count: m.namingMedium || 0, color: '#3B82F6' },
                 { label: 'Bueno', count: m.namingGood || 0, color: '#22C55E' },
             ],
-            verdict: ns >= 80 ? 'Naming en buen estado' : ns >= 60 ? 'Se necesita atención' : ns >= 40 ? 'Intervención urgente requerida' : 'Estado crítico — acción inmediata',
+            verdict: ns >= 80 ? 'Catálogo en buen estado' : ns >= 60 ? 'Se requiere atención focalizada' : ns >= 40 ? 'Intervención urgente necesaria' : 'Estado crítico — acción inmediata',
         },
 
-        // ── 7  DUPLICATES DETECTED ────────────────────────
+        // ── 10  DUPLICATES ────────────────────────────────
         {
             id: 'dupsDetected', layout: 'dupList',
             bg: 'from-[#0f172a] to-[#1e293b]',
-            actionTitle: `${m.dupCount || 0} pares sospechosos detectados por similitud`,
+            actionTitle: `${m.dupCount || 0} pares sospechosos detectados — generan compras duplicadas`,
             pairs: (m.topDups || []).slice(0, 4),
             abbrCount: m.abbrCount || 0,
             topAbbrs: (m.topAbbrs || []).slice(0, 6),
         },
 
-        // ── 8  WHAT WE BUILT ─────────────────────────────
+        // ── 11  WHAT WE BUILT ─────────────────────────────
         {
             id: 'tools', layout: 'grid6',
             bg: 'from-[#0f172a] to-[#1e293b]',
-            actionTitle: 'Construimos 8 herramientas que no existían',
+            actionTitle: 'Herramientas construidas para gestionar el catálogo Daka',
             items: [
                 { icon: '📋', title: 'Plan Maestro', code: '/nPLAN', desc: 'Naming + Cedulación + Plan 30-60-90' },
-                { icon: '👥', title: 'Mi Equipo', code: '/nTEAM', desc: 'Roles, tareas y KPIs' },
-                { icon: '🔗', title: 'Data Browser+', code: '/nSE16N', desc: 'JOINs diagnósticos + Tutorial' },
-                { icon: '📊', title: 'Gestor EAN', code: '/nEAN', desc: 'Múltiples códigos de barra' },
-                { icon: '🚀', title: 'E-commerce', code: '/nECOMM', desc: 'Tablero estratégico 36k SKU' },
-                { icon: '📥', title: 'Importador', code: '/nIMPORT', desc: 'Cargar datos reales de SAP' },
-                { icon: '🔍', title: 'Diagnóstico', code: '/nDQ', desc: 'Naming + duplicados + correcciones' },
-                { icon: '🎬', title: 'Presentación', code: '/nPRES', desc: 'Este slideshow con datos reales' },
+                { icon: '🔍', title: 'Diagnóstico DQ', code: '/nDQ', desc: 'Naming, duplicados y correcciones' },
+                { icon: '🚀', title: 'eCommerce', code: '/nECOMM', desc: 'Readiness del catálogo digital' },
+                { icon: '📊', title: 'Gestor EAN', code: '/nEAN', desc: 'Códigos EAN, UPC, QR por artículo' },
+                { icon: '📥', title: 'Importador SAP', code: '/nIMPORT', desc: 'Cargar exports de SE16 a Excel' },
+                { icon: '🔗', title: 'Data Browser', code: '/nSE16N', desc: 'Consultas con JOINs entre tablas' },
+                { icon: '📦', title: 'Pedidos Compra', code: '/nME21N', desc: 'Crear y gestionar POs en SAP' },
+                { icon: '📈', title: 'Reporte Gestión', code: '/nREPORT', desc: 'KPIs y métricas del catálogo' },
             ],
         },
 
-        // ── 7  TEAM ──────────────────────────────────────
+        // ── 12  TEAM ─────────────────────────────────────
         {
             id: 'team', layout: 'team4',
             bg: 'from-[#0f172a] to-[#1e293b]',
-            actionTitle: 'Un equipo de 4 personas ejecuta el plan completo',
+            actionTitle: 'El equipo que ejecutará la transformación',
             members: [
-                { role: 'Coordinador SCM', focus: 'Estrategia y KPIs', emoji: '🎯', you: true },
-                { role: 'Analista Datos 1', focus: 'Calidad: EAN y descripciones', emoji: '🔍', you: false },
-                { role: 'Analista Datos 2', focus: 'Inventarios y reorden', emoji: '📦', you: false },
-                { role: 'Ing. Empaque', focus: 'Pesos, medidas, cubicaje', emoji: '📐', you: false },
+                { role: 'Lic. Albert Guacarán', focus: 'Data Analyst · SAP · SQL · Estrategia SCM', emoji: '🎯', you: true },
+                { role: 'Analista Master Data', focus: 'Calidad de datos: EAN, naming, validación', emoji: '🔍', you: false },
+                { role: 'Coordinador Almacén', focus: 'Inventarios, reorden, stock mínimo', emoji: '📦', you: false },
+                { role: 'Especialista eComm', focus: 'Catálogo web, publicación, fichas técnicas', emoji: '🌐', you: false },
             ],
         },
 
-        // ── 8  30-60-90 ──────────────────────────────────
+        // ── 13  30-60-90 ──────────────────────────────────
         {
             id: 'plan309060', layout: 'timeline3',
             bg: 'from-[#0f172a] to-[#1e293b]',
-            actionTitle: 'En 90 días pasamos de diagnóstico a proceso sostenible',
+            actionTitle: 'En 90 días: de datos caóticos a canal digital operativo',
             phases: [
                 {
                     day: '1-30', label: 'DIAGNÓSTICO', color: '#EF4444',
-                    tasks: ['Exportar master data', 'Identificar campos vacíos', 'Contar duplicados', 'Diagnóstico presentado'],
+                    tasks: ['Exportar master data de SAP', 'Medir % de campos vacíos', 'Identificar artículos bloqueantes', 'Priorizar top 500 SKUs Daka'],
                 },
                 {
-                    day: '31-60', label: 'LIMPIEZA', color: '#F59E0B',
-                    tasks: ['Corregir top 500 materiales', 'Asignar EANs Cat. A', 'Completar pesos', 'Naming convention'],
+                    day: '31-60', label: 'ENRIQUECIMIENTO', color: '#F59E0B',
+                    tasks: ['Completar pesos y dimensiones', 'Asignar EANs por categoría', 'Normalizar naming convention', 'Activar puntos de reorden'],
                 },
                 {
-                    day: '61-90', label: 'OPTIMIZACIÓN', color: '#22C55E',
-                    tasks: ['Control semanal automático', 'Reportes de calidad', 'Puntos de reorden', 'Antes vs Después'],
+                    day: '61-90', label: 'eCommerce LIVE', color: '#22C55E',
+                    tasks: ['Publicar catálogo enriquecido', 'Control de calidad semanal', 'KPIs y reporte ejecutivo', 'Proceso sostenible instalado'],
                 },
             ],
         },
 
-        // ── 9  BEFORE vs AFTER PROJECTION ─────────────
+        // ── 14  PROJECTION ────────────────────────────────
         {
             id: 'projection', layout: 'barCompare',
             bg: 'from-[#0f172a] to-[#1e293b]',
-            actionTitle: 'Proyección: de caos a control en 90 días',
+            actionTitle: 'Meta 90 días: catálogo 100% apto para eCommerce',
             metrics: [
-                { label: 'Con EAN', today: 100 - Number(pctSinEAN), target: 95, unit: '%' },
-                { label: 'Con Peso', today: 100 - Number(pctSinPeso), target: 90, unit: '%' },
-                { label: 'Con Reorden', today: 100 - Number(pctSinReorden), target: 85, unit: '%' },
+                { label: 'Artículos con EAN', today: 100 - Number(pctSinEAN), target: 95, unit: '%' },
+                { label: 'Con Peso/Dimensiones', today: 100 - Number(pctSinPeso), target: 90, unit: '%' },
+                { label: 'Con Punto de Reorden', today: 100 - Number(pctSinReorden), target: 85, unit: '%' },
             ],
         },
 
-        // ── 10  THE ASK ──────────────────────────────────
+        // ── 15  THE ASK ──────────────────────────────────
         {
             id: 'ask', layout: 'bigText',
             bg: 'from-[#0854A0] to-[#0A6ED1]',
-            line1: '¿QUÉ NECESITAMOS?',
-            line2: 'Acceso a SAP MM · 3 personas · 90 días',
-            line3: 'Con eso, este plan se ejecuta y el ROI es inmediato',
+            line1: '¿QUÉ NECESITAMOS PARA ARRANCAR?',
+            line2: 'Acceso SAP MM · Equipo de 3 personas · 90 días',
+            line3: 'El ROI es inmediato: eCommerce operativo, logística optimizada, cero duplicados',
         },
 
-        // ── 13  DEMO ─────────────────────────────────────
+        // ── 16  DEMO EN VIVO ──────────────────────────────
         {
             id: 'demo', layout: 'demo',
             bg: 'from-[#0f172a] to-[#1e293b]',
-            actionTitle: 'Demo en vivo — haz clic para explorar',
+            actionTitle: 'Demo en vivo — herramientas disponibles hoy',
             buttons: [
-                { label: 'Diagnóstico', tx: '/nDQ', color: '#DC2626' },
+                { label: 'Diagnóstico DQ', tx: '/nDQ', color: '#DC2626' },
+                { label: 'eCommerce', tx: '/nECOMM', color: '#7C3AED' },
                 { label: 'Plan Maestro', tx: '/nPLAN', color: '#0854A0' },
-                { label: 'Data Browser', tx: '/nSE16N', color: '#354A5F' },
                 { label: 'Gestor EAN', tx: '/nEAN', color: '#D97706' },
-                { label: 'Mi Equipo', tx: '/nTEAM', color: '#107E3E' },
                 { label: 'Importar Excel', tx: '/nIMPORT', color: '#6F42C1' },
+                { label: 'Reporte', tx: '/nREPORT', color: '#107E3E' },
             ],
         },
 
-        // ── 12  CLOSING ──────────────────────────────────
+        // ── 17  CLOSING ───────────────────────────────────
         {
-            id: 'closing', layout: 'bigText',
-            bg: 'from-[#0f172a] to-[#1e293b]',
-            line1: 'DATAELECTRIC',
-            line2: 'Datos limpios. Decisiones inteligentes.',
-            line3: 'Gracias.',
+            id: 'closing', layout: 'closing',
+            bg: 'from-[#0f172a] via-[#0f1f3d] to-[#0f172a]',
+            name: 'Lic. Albert Guacarán',
+            title: 'Data Analyst · SAP Consultant · Comercio Internacional',
+            tagline: 'Datos limpios. Decisiones inteligentes. eCommerce que funciona.',
+            contact: 'Supply Chain Division · Daka Venezuela · 2026',
         },
     ];
 }
@@ -348,6 +404,128 @@ export default function Presentation({ materials = [], onNavigate, onClose }) {
                 />
 
                 <div className="relative z-10 w-full max-w-6xl mx-auto px-12 py-10 animate-[slideUp_0.45s_ease-out]">
+
+                    {/* ===== LAYOUT: profile (portada personal) ===== */}
+                    {s.layout === 'profile' && (
+                        <div className="text-center space-y-8">
+                            {/* Avatar circle */}
+                            <div className="relative inline-flex">
+                                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-[#0854A0] to-[#0A6ED1] flex items-center justify-center text-5xl shadow-2xl shadow-blue-900/50 ring-4 ring-white/10">
+                                    👨‍💼
+                                </div>
+                                <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-sm">✓</div>
+                            </div>
+                            <div className="space-y-3">
+                                <h1 className="text-5xl font-black text-white tracking-tight">{s.name}</h1>
+                                <p className="text-xl text-blue-300 font-light">{s.title}</p>
+                                <p className="text-base text-white/40">{s.company}</p>
+                            </div>
+                            {/* Tags */}
+                            <div className="flex flex-wrap justify-center gap-2 max-w-xl mx-auto">
+                                {s.tags.map((tag, i) => (
+                                    <span key={i} className="px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.12] text-sm text-white/70 font-medium">
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                            <p className="text-xs text-white/25 tracking-[0.3em] uppercase">{s.date}</p>
+                        </div>
+                    )}
+
+                    {/* ===== LAYOUT: agenda ===== */}
+                    {s.layout === 'agenda' && (
+                        <div className="space-y-8 max-w-4xl mx-auto">
+                            <h2 className="text-3xl font-black text-white text-center">{s.actionTitle}</h2>
+                            <div className="grid grid-cols-2 gap-3">
+                                {s.items.map((item, i) => (
+                                    <div key={i} className="flex items-start gap-4 bg-white/[0.04] border border-white/[0.07] rounded-xl px-5 py-4 hover:bg-white/[0.07] transition-colors">
+                                        <span className="text-2xl font-black text-white/15 font-mono flex-shrink-0 w-8">{item.n}</span>
+                                        <div>
+                                            <div className="text-white font-bold text-sm">{item.label}</div>
+                                            <div className="text-white/40 text-xs mt-0.5">{item.desc}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ===== LAYOUT: ecBlock (eCommerce bloqueado) ===== */}
+                    {s.layout === 'ecBlock' && (
+                        <div className="space-y-8 max-w-4xl mx-auto">
+                            <h2 className="text-3xl font-black text-white text-center">{s.actionTitle}</h2>
+                            <div className="grid grid-cols-2 gap-4">
+                                {s.blocks.map((block, i) => (
+                                    <div key={i} className="bg-red-950/40 border border-red-500/20 rounded-2xl p-6 flex items-start gap-4">
+                                        <span className="text-4xl flex-shrink-0">{block.icon}</span>
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <h3 className="text-white font-bold text-sm">{block.title}</h3>
+                                                <span className="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full font-bold">BLOQUEADO</span>
+                                            </div>
+                                            <p className="text-white/50 text-xs">{block.problem}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-center text-white/30 text-sm">Sin datos maestros completos → el canal digital no puede arrancar</p>
+                        </div>
+                    )}
+
+                    {/* ===== LAYOUT: scmFlow (Supply Chain completo) ===== */}
+                    {s.layout === 'scmFlow' && (
+                        <div className="space-y-8 w-full">
+                            <h2 className="text-3xl font-black text-white text-center">{s.actionTitle}</h2>
+                            <div className="grid grid-cols-4 gap-3 max-w-5xl mx-auto">
+                                {s.lanes.map((lane, i) => (
+                                    <div key={i} className="rounded-2xl overflow-hidden border border-white/[0.08]">
+                                        {/* Lane header */}
+                                        <div className="px-3 py-2 text-center text-[10px] font-black tracking-wider text-white"
+                                            style={{ backgroundColor: `${lane.color}30`, borderBottom: `1px solid ${lane.color}40` }}>
+                                            {lane.label}
+                                        </div>
+                                        {/* Steps */}
+                                        <div className="p-3 space-y-2 bg-white/[0.02]">
+                                            {lane.steps.map((step, j) => {
+                                                const [code, ...rest] = step.split('\n');
+                                                return (
+                                                    <div key={j} className="text-center bg-white/[0.05] border border-white/[0.08] rounded-xl py-3 px-2">
+                                                        <div className="text-xs font-black font-mono" style={{ color: lane.color }}>{code}</div>
+                                                        <div className="text-[10px] text-white/40 mt-0.5">{rest.join(' ')}</div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            {/* Arrow connecting chain */}
+                            <div className="flex items-center justify-center gap-2 text-white/20 text-xs">
+                                {s.lanes.map((l, i) => (
+                                    <span key={i} className="flex items-center gap-2">
+                                        <span style={{ color: l.color }}>{l.label.split(' ')[0]}</span>
+                                        {i < s.lanes.length - 1 && <span className="text-white/20">→</span>}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ===== LAYOUT: closing (cierre personalizado) ===== */}
+                    {s.layout === 'closing' && (
+                        <div className="text-center space-y-8">
+                            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#0854A0] to-[#0A6ED1] flex items-center justify-center text-4xl mx-auto shadow-2xl shadow-blue-900/50 ring-4 ring-white/10">
+                                👨‍💼
+                            </div>
+                            <div className="space-y-3">
+                                <h1 className="text-4xl font-black text-white">{s.name}</h1>
+                                <p className="text-lg text-blue-300 font-light">{s.title}</p>
+                            </div>
+                            <div className="w-24 h-px bg-white/10 mx-auto" />
+                            <p className="text-xl text-white/60 font-light italic max-w-2xl mx-auto">"{s.tagline}"</p>
+                            <p className="text-sm text-white/25 tracking-widest uppercase">{s.contact}</p>
+                        </div>
+                    )}
 
                     {/* ===== LAYOUT: bigText ===== */}
                     {s.layout === 'bigText' && (
